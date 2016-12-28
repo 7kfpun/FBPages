@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   Image,
-  StyleSheet,
   View,
 } from 'react-native';
 
@@ -16,10 +15,25 @@ export default class ProfilePicture extends Component {
   }
 
   componentDidMount() {
-    this._onRequest();
+    this.onRequest();
   }
 
-  _responseInfoCallback(error, result) {
+  onRequest() {
+    const infoRequest = new GraphRequest(
+      this.props.userId,
+      {
+        parameters: {
+          fields: { string: 'picture.type(small)' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
+      (error, result) => this.responseInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responseInfoCallback(error, result) {
     if (error) {
       console.log('Error fetching data:', error);
     } else {
@@ -30,21 +44,6 @@ export default class ProfilePicture extends Component {
         });
       }
     }
-  }
-
-  _onRequest() {
-    const infoRequest = new GraphRequest(
-      this.props.userId,
-      {
-        parameters: {
-          fields: { string: 'picture.type(small)' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this._responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
   }
 
   render() {
@@ -59,10 +58,12 @@ export default class ProfilePicture extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {},
-});
+ProfilePicture.propTypes = {
+  userId: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+  width: React.PropTypes.number,
+};
 
 ProfilePicture.defaultProps = {
   width: 40,
-}
+};

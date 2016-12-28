@@ -14,18 +14,28 @@ import {
 import Moment from 'moment';
 import Parse from 'url-parse';
 
-import Cover from './components/cover';
-import Insight from './components/insight';
-import ProfilePicture from './components/profile-picture';
-
 import { Actions } from 'react-native-router-flux';
-import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
 
+import Cover from './components/cover';
+import Insight from './components/insight';
+import ProfilePicture from './components/profile-picture';
+
 const window = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ECEFF1',
+  },
+  url: {
+    color: '#1565C0',
+    textDecorationLine: 'underline',
+  },
+});
 
 export default class publishedPost extends Component {
   constructor(props) {
@@ -41,56 +51,10 @@ export default class publishedPost extends Component {
   }
 
   componentDidMount() {
-    this._onRequest();
+    this.onRequest();
   }
 
-  _responseInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching feed:', error);
-    } else {
-      console.log('Success fetching feed:', result);
-      this.setState({
-        dataSource: this.dataSource.cloneWithRows(result.data),
-        posts: result.data,
-        refreshing: false,
-      });
-
-      if (result.paging) {
-        let url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-        }
-      }
-    }
-  }
-
-  _responsePagingInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching feed:', error);
-    } else {
-      console.log('Success fetching feed:', result);
-      let newPosts = this.state.posts.concat(result.data);
-
-      this.setState({
-        dataSource: this.dataSource.cloneWithRows(newPosts),
-        posts: newPosts,
-      });
-
-      if (result.paging) {
-        let url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-          // alert(url.query.until);
-        }
-      }
-    }
-  }
-
-  _onRequest() {
+  onRequest() {
     this.setState({ refreshing: true });
 
     const infoRequest = new GraphRequest(
@@ -102,13 +66,13 @@ export default class publishedPost extends Component {
         },
         accessToken: this.props.pageAccessToken,
       },
-      (error, result) => this._responseInfoCallback(error, result),
+      (error, result) => this.responseInfoCallback(error, result),
     );
 
     new GraphRequestManager().addRequest(infoRequest).start();
   }
 
-  _onPagingRequest() {
+  onPagingRequest() {
     if (this.state.nextUntil) {
       const infoRequest = new GraphRequest(
         `/${this.props.pageId}/feed`,
@@ -120,10 +84,56 @@ export default class publishedPost extends Component {
           },
           accessToken: this.props.pageAccessToken,
         },
-        (error, result) => this._responsePagingInfoCallback(error, result),
+        (error, result) => this.responsePagingInfoCallback(error, result),
       );
 
       new GraphRequestManager().addRequest(infoRequest).start();
+    }
+  }
+
+  responseInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      this.setState({
+        dataSource: this.dataSource.cloneWithRows(result.data),
+        posts: result.data,
+        refreshing: false,
+      });
+
+      if (result.paging) {
+        const url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+        }
+      }
+    }
+  }
+
+  responsePagingInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      const newPosts = this.state.posts.concat(result.data);
+
+      this.setState({
+        dataSource: this.dataSource.cloneWithRows(newPosts),
+        posts: newPosts,
+      });
+
+      if (result.paging) {
+        const url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+          // alert(url.query.until);
+        }
+      }
     }
   }
 
@@ -147,7 +157,7 @@ export default class publishedPost extends Component {
               pageName: this.props.pageName,
               pageCategory: this.props.pageCategory,
               pageAccessToken: this.props.pageAccessToken,
-            })
+            }),
           }}
         />
 
@@ -155,19 +165,19 @@ export default class publishedPost extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRequest.bind(this)}
+              onRefresh={() => this.onRequest()}
             />
           }
 
           enableEmptySections={true}
           onEndReached={() => {
             console.log('onEndReached');
-            this._onPagingRequest();
+            this.onPagingRequest();
           }}
           dataSource={this.state.dataSource}
 
           renderHeader={() => <Cover {...this.props} />}
-          renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
+          renderRow={item => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
             <View style={{ padding: 15 }}>
               <View style={{ flexDirection: 'row' }}>
                 <ProfilePicture userId={item.from && item.from.id} />
@@ -186,11 +196,9 @@ export default class publishedPost extends Component {
 
               <ParsedText
                 style={{ fontWeight: '400', marginBottom: 10, lineHeight: 22 }}
-                parse={
-                  [
-                    { type: 'url', style: styles.url, onPress: this.handleUrlPress },
-                  ]
-                }
+                parse={[
+                  { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                ]}
               >
                 {item.message}
               </ParsedText>
@@ -207,7 +215,7 @@ export default class publishedPost extends Component {
               source={{ uri: item.full_picture }}
             />}
 
-            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor='white' onPress={() => Linking.openURL(item.link) }>
+            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => Linking.openURL(item.link)}>
               <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
                 {item.full_picture && <Image
                   resizeMode={'contain'}
@@ -240,13 +248,10 @@ export default class publishedPost extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ECEFF1',
-  },
-  url: {
-    color: '#1565C0',
-    textDecorationLine: 'underline',
-  },
-});
+publishedPost.propTypes = {
+  title: React.PropTypes.string,
+  pageId: React.PropTypes.string,
+  pageName: React.PropTypes.string,
+  pageCategory: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};

@@ -3,17 +3,22 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
-import { Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
-import { List, ListItem } from 'react-native-elements';
+import { Button, List, ListItem } from 'react-native-elements';
 import NavigationBar from 'react-native-navbar';
 
-export default class AppReview extends Component {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ECEFF1',
+  },
+});
+
+export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,10 +28,22 @@ export default class AppReview extends Component {
   }
 
   componentDidMount() {
-    this._onRequest();
+    this.onRequest();
   }
 
-  _responseInfoCallback(error, result) {
+  onRequest() {
+    this.setState({ refreshing: true });
+
+    const infoRequest = new GraphRequest(
+      '/me/accounts',
+      null,
+      (error, result) => this.responseInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responseInfoCallback(error, result) {
     if (error) {
       console.log('Error fetching accounts:', error);
       Actions.login();
@@ -40,18 +57,6 @@ export default class AppReview extends Component {
         refreshing: false,
       });
     }
-  }
-
-  _onRequest() {
-    this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      '/me/accounts',
-      null,
-      (error, result) => this._responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
   }
 
   render() {
@@ -69,11 +74,11 @@ export default class AppReview extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRequest.bind(this)}
+              onRefresh={() => this.onRequest()}
             />
           }
         >
-          {this.state.pages.length === 0 && <Button raised icon={{ name: 'cached' }} title='Refresh' onPress={() => this._onRequest()}/>}
+          {this.state.pages.length === 0 && <Button raised icon={{ name: 'cached' }} title={'Refresh'} onPress={() => this.onRequest()} />}
           {this.state.pages.length !== 0 && <List containerStyle={{ marginBottom: 20 }}>
             {
               this.state.pages.map((item, i) => (
@@ -97,9 +102,6 @@ export default class AppReview extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ECEFF1',
-  },
-});
+Main.propTypes = {
+  title: React.PropTypes.string,
+};

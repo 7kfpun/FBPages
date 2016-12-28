@@ -7,15 +7,20 @@ import {
   View,
 } from 'react-native';
 
-import ProfilePicture from './components/profile-picture';
-
 import { Actions } from 'react-native-router-flux';
-import { CheckBox } from 'react-native-elements';
-import { FormLabel, FormInput } from 'react-native-elements'
+import { CheckBox, FormInput } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
+
+import ProfilePicture from './components/profile-picture';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default class Publish extends Component {
   constructor(props) {
@@ -23,42 +28,18 @@ export default class Publish extends Component {
     this.state = {
       text: '',
       date: new Date(),
-      timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+      timeZoneOffsetInHours: (-1) * ((new Date()).getTimezoneOffset() / 60),
       checked: false,
     };
   }
 
-  pop() {
-    if (this.state.text) {
-      Alert.alert(
-        'Discard Post?',
-        null,
-        [
-          { text: 'Discard', onPress: () => Actions.pop() },
-          { text: 'Keep', onPress: () => console.log('Keep Pressed'), style: 'cancel' },
-        ]
-      );
-    } else {
-      Actions.pop();
-    }
-  }
-
-  _responseInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching data:', error);
-    } else {
-      console.log('Success fetching data:', result);
-      Actions.pop();
-    }
-  }
-
-  _onPosting() {
-    var parameters;
+  onRequest() {
+    let parameters;
     if (this.state.checked) {
       parameters = {
         message: { string: this.state.text },
         published: { string: 'false' },
-        scheduled_publish_time: { 'string': Math.round(this.state.date.getTime() / 1000).toString() },
+        scheduled_publish_time: { string: Math.round(this.state.date.getTime() / 1000).toString() },
       };
     } else {
       parameters = {
@@ -73,10 +54,34 @@ export default class Publish extends Component {
         httpMethod: 'POST',
         accessToken: this.props.pageAccessToken,
       },
-      (error, result) => this._responseInfoCallback(error, result),
+      (error, result) => this.responseInfoCallback(error, result),
     );
 
     new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responseInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching data:', error);
+    } else {
+      console.log('Success fetching data:', result);
+      Actions.pop();
+    }
+  }
+
+  pop() {
+    if (this.state.text) {
+      Alert.alert(
+        'Discard Post?',
+        null,
+        [
+          { text: 'Discard', onPress: () => Actions.pop() },
+          { text: 'Keep', onPress: () => console.log('Keep Pressed'), style: 'cancel' },
+        ],
+      );
+    } else {
+      Actions.pop();
+    }
   }
 
   render() {
@@ -90,7 +95,7 @@ export default class Publish extends Component {
           }}
           rightButton={{
             title: this.state.text ? 'Post' : '',
-            handler: () => this._onPosting(),
+            handler: () => this.onRequest(),
           }}
         />
 
@@ -107,16 +112,16 @@ export default class Publish extends Component {
         </View>
 
         <View style={{ flex: 1 }}>
-          <FormInput onChangeText={text => this.setState({ text })} multiline = {true} numberOfLines = {4} placeholder={'Write something...'} />
+          <FormInput onChangeText={text => this.setState({ text })} multiline numberOfLines={4} placeholder={'Write something...'} />
         </View>
 
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <CheckBox
             center
-            title='Post Later?'
-            checkedIcon='dot-circle-o'
-            checkedColor='gray'
-            uncheckedIcon='circle-o'
+            title={'Post Later?'}
+            checkedIcon={'dot-circle-o'}
+            checkedColor={'gray'}
+            uncheckedIcon={'circle-o'}
             checked={this.state.checked}
             onPress={() => this.setState({ checked: !this.state.checked })}
           />
@@ -124,7 +129,7 @@ export default class Publish extends Component {
             date={this.state.date}
             mode="datetime"
             timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-            onDateChange={(date) => this.setState({ date })}
+            onDateChange={date => this.setState({ date })}
           />}
 
           <KeyboardSpacer />
@@ -134,8 +139,9 @@ export default class Publish extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+Publish.propTypes = {
+  title: React.PropTypes.string,
+  pageId: React.PropTypes.string,
+  pageName: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};

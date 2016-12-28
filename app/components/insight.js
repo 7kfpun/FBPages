@@ -7,9 +7,17 @@ import {
 } from 'react-native';
 
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
-import Spinner from'react-native-spinkit';
+import Spinner from 'react-native-spinkit';
 
 const window = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 11,
+    fontWeight: '300',
+    marginBottom: 6,
+  },
+});
 
 export default class Insight extends Component {
   constructor(props) {
@@ -20,10 +28,25 @@ export default class Insight extends Component {
   }
 
   componentDidMount() {
-    this._onRefresh();
+    this.onRefresh();
   }
 
-  _responseInfoCallback(error, result) {
+  onRefresh() {
+    const infoRequest = new GraphRequest(
+      `/${this.props.postId}/insights/post_impressions_unique`,
+      {
+        parameters: {
+          fields: { string: 'values' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
+      (error, result) => this.responseInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responseInfoCallback(error, result) {
     if (error) {
       console.log('Error fetching insight:', error);
     } else {
@@ -40,21 +63,6 @@ export default class Insight extends Component {
     }
   }
 
-  _onRefresh() {
-    const infoRequest = new GraphRequest(
-      `/${this.props.postId}/insights/post_impressions_unique`,
-      {
-        parameters: {
-          fields: { string: 'values' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this._responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
-  }
-
   render() {
     const blockWidth = window.width - 30;
     if (this.state.postImpressions === 'N/A') {
@@ -63,20 +71,17 @@ export default class Insight extends Component {
       return (<View>
         <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * this.state.postImpressions / 5000 : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
-          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * (1 - this.state.postImpressions / 5000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * (this.state.postImpressions / 5000) : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * ((1 - this.state.postImpressions) / 5000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
         </View>
       </View>);
     }
 
-    return <Spinner style={styles.spinner} isVisible={true} size={20} type={'Wave'} color={'gray'}/>;
+    return <Spinner style={styles.spinner} isVisible={true} size={20} type={'Wave'} color={'gray'} />;
   }
 }
 
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 11,
-    fontWeight: '300',
-    marginBottom: 6,
-  },
-});
+Insight.propTypes = {
+  postId: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};

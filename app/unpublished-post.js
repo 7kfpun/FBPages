@@ -12,17 +12,29 @@ import {
 import Moment from 'moment';
 import Parse from 'url-parse';
 
-import Cover from './components/cover';
-import ProfilePicture from './components/profile-picture';
-
 import { Actions } from 'react-native-router-flux';
-import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
 
-export default class Post extends Component {
+import Cover from './components/cover';
+import ProfilePicture from './components/profile-picture';
+
+const window = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ECEFF1',
+  },
+  url: {
+    color: '#1565C0',
+    textDecorationLine: 'underline',
+  },
+});
+
+export default class UnpublishedPost extends Component {
   constructor(props) {
     super(props);
     this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
@@ -36,56 +48,10 @@ export default class Post extends Component {
   }
 
   componentDidMount() {
-    this._onRequest();
+    this.onRequest();
   }
 
-  _responseInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching feed:', error);
-    } else {
-      console.log('Success fetching feed:', result);
-      this.setState({
-        dataSource: this.dataSource.cloneWithRows(result.data),
-        posts: result.data,
-        refreshing: false,
-      });
-
-      if (result.paging) {
-        let url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-        }
-      }
-    }
-  }
-
-  _responsePagingInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching feed:', error);
-    } else {
-      console.log('Success fetching feed:', result);
-      let newPosts = this.state.posts.concat(result.data);
-
-      this.setState({
-        dataSource: this.dataSource.cloneWithRows(newPosts),
-        posts: newPosts,
-      });
-
-      if (result.paging) {
-        let url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-          // alert(url.query.until);
-        }
-      }
-    }
-  }
-
-  _onRequest() {
+  onRequest() {
     this.setState({ refreshing: true });
 
     const infoRequest = new GraphRequest(
@@ -98,13 +64,13 @@ export default class Post extends Component {
         },
         accessToken: this.props.pageAccessToken,
       },
-      (error, result) => this._responseInfoCallback(error, result),
+      (error, result) => this.responseInfoCallback(error, result),
     );
 
     new GraphRequestManager().addRequest(infoRequest).start();
   }
 
-  _onPagingRequest() {
+  onPagingRequest() {
     if (this.state.nextUntil) {
       const infoRequest = new GraphRequest(
         `/${this.props.pageId}/promotable_posts`,
@@ -117,10 +83,56 @@ export default class Post extends Component {
           },
           accessToken: this.props.pageAccessToken,
         },
-        (error, result) => this._responsePagingInfoCallback(error, result),
+        (error, result) => this.responsePagingInfoCallback(error, result),
       );
 
       new GraphRequestManager().addRequest(infoRequest).start();
+    }
+  }
+
+  responseInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      this.setState({
+        dataSource: this.dataSource.cloneWithRows(result.data),
+        posts: result.data,
+        refreshing: false,
+      });
+
+      if (result.paging) {
+        const url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+        }
+      }
+    }
+  }
+
+  responsePagingInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      const newPosts = this.state.posts.concat(result.data);
+
+      this.setState({
+        dataSource: this.dataSource.cloneWithRows(newPosts),
+        posts: newPosts,
+      });
+
+      if (result.paging) {
+        const url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+          // alert(url.query.until);
+        }
+      }
     }
   }
 
@@ -133,25 +145,34 @@ export default class Post extends Component {
             title: 'Back',
             handler: Actions.pop,
           }}
+          rightButton={{
+            title: 'Publish',
+            handler: () => Actions.publish({
+              pageId: this.props.pageId,
+              pageName: this.props.pageName,
+              pageCategory: this.props.pageCategory,
+              pageAccessToken: this.props.pageAccessToken,
+            }),
+          }}
         />
 
         <ListView
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRequest.bind(this)}
+              onRefresh={() => this.onRequest()}
             />
           }
 
           enableEmptySections={true}
           onEndReached={() => {
             console.log('onEndReached');
-            this._onPagingRequest();
+            this.onPagingRequest();
           }}
           dataSource={this.state.dataSource}
 
           renderHeader={() => <Cover {...this.props} />}
-          renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
+          renderRow={item => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
             <View style={{ padding: 15 }}>
               <View style={{ flexDirection: 'row' }}>
                 <ProfilePicture userId={item.from && item.from.id} />
@@ -170,11 +191,9 @@ export default class Post extends Component {
 
               <ParsedText
                 style={{ fontWeight: '400', marginBottom: 10, lineHeight: 22 }}
-                parse={
-                  [
-                    { type: 'url', style: styles.url, onPress: this.handleUrlPress },
-                  ]
-                }
+                parse={[
+                  { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                ]}
               >
                 {item.message}
               </ParsedText>
@@ -196,13 +215,10 @@ export default class Post extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ECEFF1',
-  },
-  url: {
-    color: '#1565C0',
-    textDecorationLine: 'underline',
-  },
-});
+UnpublishedPost.propTypes = {
+  title: React.PropTypes.string,
+  pageId: React.PropTypes.string,
+  pageName: React.PropTypes.string,
+  pageCategory: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};

@@ -7,71 +7,11 @@ import {
   View,
 } from 'react-native';
 
-import ProfilePicture from './profile-picture';
-
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 
+import ProfilePicture from './profile-picture';
+
 const window = Dimensions.get('window');
-
-export default class Cover extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      url: 'https://i2.cdn.turner.com/cnn/dam/assets/141202112409-profile-background-stock.jpg',
-    };
-  }
-
-  componentDidMount() {
-    this._onRequest();
-  }
-
-  _responseInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching data:', error);
-    } else {
-      console.log('Success fetching data cover:', result);
-      if (result.cover && result.cover.source) {
-        this.setState({
-          url: result.cover && result.cover.source,
-        });
-      }
-    }
-  }
-
-  _onRequest() {
-    const infoRequest = new GraphRequest(
-      this.props.pageId,
-      {
-        parameters: {
-          fields: { string: 'cover' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this._responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
-  }
-
-  render() {
-    return (
-      <Image
-        style={styles.container}
-        source={{ uri: this.state.url }}
-      >
-        <View style={styles.body}>
-          <View style={{ flexDirection: 'row' }}>
-            <ProfilePicture userId={this.props.pageId} width={70} />
-            <View style={styles.textBlock}>
-              <Text style={styles.headlineText}>{this.props.pageName}</Text>
-              <Text style={styles.text}>{this.props.pageCategory}</Text>
-            </View>
-          </View>
-        </View>
-      </Image>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -114,3 +54,70 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 });
+
+export default class Cover extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: 'https://i2.cdn.turner.com/cnn/dam/assets/141202112409-profile-background-stock.jpg',
+    };
+  }
+
+  componentDidMount() {
+    this.onRequest();
+  }
+
+  onRequest() {
+    const infoRequest = new GraphRequest(
+      this.props.pageId,
+      {
+        parameters: {
+          fields: { string: 'cover' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
+      (error, result) => this.responseInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responseInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching data:', error);
+    } else {
+      console.log('Success fetching data cover:', result);
+      if (result.cover && result.cover.source) {
+        this.setState({
+          url: result.cover && result.cover.source,
+        });
+      }
+    }
+  }
+
+  render() {
+    return (
+      <Image
+        style={styles.container}
+        source={{ uri: this.state.url }}
+      >
+        <View style={styles.body}>
+          <View style={{ flexDirection: 'row' }}>
+            <ProfilePicture userId={this.props.pageId} width={70} />
+            <View style={styles.textBlock}>
+              <Text style={styles.headlineText}>{this.props.pageName}</Text>
+              <Text style={styles.text}>{this.props.pageCategory}</Text>
+            </View>
+          </View>
+        </View>
+      </Image>
+    );
+  }
+}
+
+Cover.propTypes = {
+  pageId: React.PropTypes.string,
+  pageName: React.PropTypes.string,
+  pageCategory: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};

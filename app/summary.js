@@ -3,18 +3,22 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
+import { Actions } from 'react-native-router-flux';
+import { List, ListItem } from 'react-native-elements';
+import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import NavigationBar from 'react-native-navbar';
+
 import Cover from './components/cover';
 
-import { Actions } from 'react-native-router-flux';
-import { FormLabel } from 'react-native-elements';
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
-import { List, ListItem } from 'react-native-elements';
-import NavigationBar from 'react-native-navbar';
-import Spinner from'react-native-spinkit';
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ECEFF1',
+  },
+});
 
 export default class Summary extends Component {
   constructor(props) {
@@ -27,15 +31,51 @@ export default class Summary extends Component {
   }
 
   componentDidMount() {
-    this._onRefresh();
+    this.onRefresh();
   }
 
-  _onRefresh() {
-    this._onPublishedRequest();
-    this._onUnpublishedRequest();
+  onRefresh() {
+    this.onPublishedRequest();
+    this.onUnpublishedRequest();
   }
 
-  _responsePublishedInfoCallback(error, result) {
+  onPublishedRequest() {
+    this.setState({ refreshing: true });
+
+    const infoRequest = new GraphRequest(
+      `/${this.props.pageId}/feed`,
+      {
+        parameters: {
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
+          limit: { string: '100' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
+      (error, result) => this.responsePublishedInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  onUnpublishedRequest() {
+    this.setState({ refreshing: true });
+
+    const infoRequest = new GraphRequest(
+      `/${this.props.pageId}/promotable_posts`,
+      {
+        parameters: {
+          is_published: { string: 'false' },
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
+          limit: { string: '100' },
+        },
+      },
+      (error, result) => this.responseUnpublishedInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  responsePublishedInfoCallback(error, result) {
     if (error) {
       console.log('Error fetching data:', error);
     } else {
@@ -53,7 +93,7 @@ export default class Summary extends Component {
     }
   }
 
-  _responseUnpublishedInfoCallback(error, result) {
+  responseUnpublishedInfoCallback(error, result) {
     if (error) {
       console.log('Error fetching data:', error);
     } else {
@@ -69,42 +109,6 @@ export default class Summary extends Component {
         });
       }
     }
-  }
-
-  _onPublishedRequest() {
-    this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/feed`,
-      {
-        parameters: {
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
-          limit: { string: '100' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this._responsePublishedInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
-  }
-
-  _onUnpublishedRequest() {
-    this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/promotable_posts`,
-      {
-        parameters: {
-          is_published: { string: 'false' },
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
-          limit: { string: '100' },
-        },
-      },
-      (error, result) => this._responseUnpublishedInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
   }
 
   render() {
@@ -123,7 +127,7 @@ export default class Summary extends Component {
               pageName: this.props.pageName,
               pageCategory: this.props.pageCategory,
               pageAccessToken: this.props.pageAccessToken,
-            })
+            }),
           }}
         />
 
@@ -131,7 +135,7 @@ export default class Summary extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
+              onRefresh={() => this.onRefresh()}
             />
           }
         >
@@ -167,9 +171,10 @@ export default class Summary extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ECEFF1',
-  },
-});
+Summary.propTypes = {
+  title: React.PropTypes.string,
+  pageId: React.PropTypes.string,
+  pageName: React.PropTypes.string,
+  pageCategory: React.PropTypes.string,
+  pageAccessToken: React.PropTypes.string,
+};
