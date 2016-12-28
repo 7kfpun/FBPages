@@ -2,14 +2,10 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
-import {
-  AccessToken,
-  LoginButton,
-} from 'react-native-fbsdk';
-
+import { AccessToken, LoginButton } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
 
 export default class AppReview extends Component {

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {
+  Image,
+  ListView,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -7,9 +9,11 @@ import {
   View,
 } from 'react-native';
 
-import Insight from './insight';
+import Moment from 'moment';
 
-import moment from 'moment';
+import Cover from './components/cover';
+import Insight from './components/insight';
+import ProfilePicture from './components/profile-picture';
 
 import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
@@ -19,41 +23,48 @@ import NavigationBar from 'react-native-navbar';
 export default class publishedPost extends Component {
   constructor(props) {
     super(props);
+
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
+
     this.state = {
+      dataSource: this.dataSource.cloneWithRows([]),
       refreshing: false,
       posts: [],
     };
   }
 
   componentDidMount() {
-    this._onRefresh();
+    this._onRequest();
   }
 
   _responseInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error);
+      console.log('Error fetching feed:', error);
     } else {
-      console.log('Success fetching data:', result);
+      console.log('Success fetching feed:', result);
       this.setState({
-        posts: result.data,
+        dataSource: this.dataSource.cloneWithRows(result.data),
         refreshing: false,
       });
     }
   }
 
-  _onRefresh() {
-    console.log(this.props.pageId);
+  _onRequest() {
     this.setState({ refreshing: true });
 
-    // Create a graph request asking for user information with a callback to handle the response.
     const infoRequest = new GraphRequest(
       `/${this.props.pageId}/feed`,
       // '/935544009880691/feed',
       // '/1402987109960859/feed',
-      null,
+      {
+        parameters: {
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
       (error, result) => this._responseInfoCallback(error, result),
     );
-    // Start the graph request.
+
     new GraphRequestManager().addRequest(infoRequest).start();
   }
 
@@ -67,29 +78,56 @@ export default class publishedPost extends Component {
             title: 'Back',
             handler: Actions.pop,
           }}
+          rightButton={{
+            title: 'Publish',
+            handler: () => Actions.publish({
+              pageId: this.props.pageId,
+              pageName: this.props.pageName,
+              pageCategory: this.props.pageCategory,
+              pageAccessToken: this.props.pageAccessToken,
+            })
+          }}
         />
 
         <ScrollView
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
+              onRefresh={this._onRequest.bind(this)}
             />
-          }
-        >
-          {
-            this.state.posts.map((item, i) => (
-              <Card key={i}>
-                <Text style={{ marginBottom: 10 }}>
-                  {item.message}
-                </Text>
-                <Text style={{ marginBottom: 10 }}>
-                  {moment(item.created_time).fromNow()}
-                </Text>
-                <Insight postId={item.id} pageName={that.props.pageName} pageAccessToken={that.props.pageAccessToken} />
-              </Card>
-            ))
-          }
+          }>
+          <Cover {...this.props} />
+
+          <ListView
+            enableEmptySections={true}
+            dataSource={this.state.dataSource}
+            renderRow={(item) => <Card>
+              <View style={{ flexDirection: 'row' }}>
+                <ProfilePicture userId={item.from && item.from.id} />
+                <View style={{ flexDirection: 'column', marginLeft: 5 }}>
+                  <Text style={{ fontWeight: '600', marginBottom: 3 }}>
+                    {item.from && item.from.name} {item.to && item.to.data && ` >> ${item.to.data[0].name}`}
+                  </Text>
+                  {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                    {`Posted by ${item.admin_creator.name}`}
+                  </Text>}
+                  <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
+                    {Moment(item.created_time).fromNow()}
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={{ marginBottom: 10 }}>
+                {item.message}
+              </Text>
+              {item.full_picture && <Image
+                resizeMode={'contain'}
+                style={{ width: 310, height: 310 }}
+                source={{ uri: item.full_picture }}
+              />}
+              <Insight postId={item.id} pageName={that.props.pageName} pageAccessToken={that.props.pageAccessToken} />
+            </Card>}
+          />
         </ScrollView>
       </View>
     );

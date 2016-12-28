@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 
-import moment from 'moment';
+import Moment from 'moment';
 
 import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
@@ -48,7 +48,12 @@ export default class Post extends Component {
       `/${this.props.pageId}/promotable_posts`,
       // '/935544009880691/feed',
       // '/1402987109960859/feed',
-      {is_published: false},
+      {
+        parameters: {
+          is_published: { string: 'false' },
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
+        },
+      },
       (error, result) => this._responseInfoCallback(error, result),
     );
     // Start the graph request.
@@ -81,7 +86,7 @@ export default class Post extends Component {
                   {item.message}
                 </Text>
                 <Text style={{ marginBottom: 10 }}>
-                  {moment(item.created_time).fromNow()}
+                  {Moment(item.created_time).fromNow()}
                 </Text>
               </Card>
             ))

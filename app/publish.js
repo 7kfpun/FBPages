@@ -4,7 +4,7 @@ import {
   DatePickerIOS,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
@@ -56,7 +56,7 @@ export default class Publish extends Component {
     if (this.state.checked) {
       parameters = {
         message: { string: this.state.text },
-        published: { 'string': 'false' },
+        published: { string: 'false' },
         scheduled_publish_time: { 'string': Math.round(this.state.date.getTime() / 1000).toString() },
       };
     } else {

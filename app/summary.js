@@ -7,13 +7,14 @@ import {
   View,
 } from 'react-native';
 
-import NavigationBar from 'react-native-navbar';
+import Cover from './components/cover';
 
 import { Actions } from 'react-native-router-flux';
 import { Button } from 'react-native-elements';
+import { FormLabel } from 'react-native-elements'
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { List, ListItem } from 'react-native-elements';
-import { FormLabel } from 'react-native-elements'
+import NavigationBar from 'react-native-navbar';
 
 export default class Summary extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ export default class Summary extends Component {
     };
   }
 
-  componentDidMounted() {
+  componentDidMount() {
     console.log(this.props.pageId);
   }
 
@@ -64,19 +65,7 @@ export default class Summary extends Component {
           }}
         />
 
-        <FormLabel containerStyle={{ marginBottom: 10 }}>{this.props.pageName}</FormLabel>
-
-        <Button
-          raised
-          icon={{ name: 'edit' }}
-          title='Publish'
-          onPress={() => Actions.publish({
-            pageId: this.props.pageId,
-            pageName: this.props.pageName,
-            pageCategory: this.props.pageCategory,
-            pageAccessToken: this.props.pageAccessToken,
-          })}
-        />
+        <Cover {...this.props} />
 
         <ScrollView
           // refreshControl={
@@ -111,6 +100,19 @@ export default class Summary extends Component {
             />
           </List>
         </ScrollView>
+
+        <Button
+          raised
+          icon={{ name: 'edit' }}
+          title='Publish'
+          onPress={() => Actions.publish({
+            pageId: this.props.pageId,
+            pageName: this.props.pageName,
+            pageCategory: this.props.pageCategory,
+            pageAccessToken: this.props.pageAccessToken,
+          })}
+        />
+
       </View>
     );
   }

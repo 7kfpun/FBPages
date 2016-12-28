@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
 import {
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
 import { Button } from 'react-native-elements';
+import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { List, ListItem } from 'react-native-elements';
 import NavigationBar from 'react-native-navbar';
-
-import {
-  GraphRequest,
-  GraphRequestManager,
-} from 'react-native-fbsdk';
 
 export default class AppReview extends Component {
   constructor(props) {
@@ -45,13 +41,12 @@ export default class AppReview extends Component {
   _onRefresh() {
     this.setState({ refreshing: true });
 
-    // Create a graph request asking for user information with a callback to handle the response.
     const infoRequest = new GraphRequest(
       '/me/accounts',
       null,
       (error, result) => this._responseInfoCallback(error, result),
     );
-    // Start the graph request.
+
     new GraphRequestManager().addRequest(infoRequest).start();
   }
 
