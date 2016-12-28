@@ -98,7 +98,7 @@ export default class Post extends Component {
                 <View style={{ flexDirection: 'row' }}>
                   <ProfilePicture userId={item.from && item.from.id} />
                   <View style={{ flexDirection: 'column', marginLeft: 8 }}>
-                    <Text style={{ fontWeight: '600', marginBottom: 3 }}>
+                    <Text style={{ fontWeight: '400', marginBottom: 3 }}>
                       {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
                     </Text>
                     {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
@@ -114,7 +114,7 @@ export default class Post extends Component {
                 </View>
 
                 <ParsedText
-                  style={{ marginBottom: 10 }}
+                  style={{ fontWeight: '400', marginBottom: 10, lineHeight: 22 }}
                   parse={
                     [
                       { type: 'url', style: styles.url, onPress: this.handleUrlPress },
@@ -130,7 +130,7 @@ export default class Post extends Component {
                 style={{
                   marginBottom: 10,
                   width: window.width,
-                  height: 320,
+                  height: 280,
                 }}
                 source={{ uri: item.full_picture }}
               />}

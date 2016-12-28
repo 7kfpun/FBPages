@@ -23,14 +23,18 @@ export default class AppReview extends Component {
   }
 
   componentDidMount() {
-    this._onRefresh();
+    this._onRequest();
   }
 
   _responseInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error);
+      console.log('Error fetching accounts:', error);
+      Actions.login();
+      this.setState({
+        refreshing: false,
+      });
     } else {
-      console.log('Success fetching data:', result);
+      console.log('Success fetching accounts:', result);
       this.setState({
         pages: result.data,
         refreshing: false,
@@ -38,7 +42,7 @@ export default class AppReview extends Component {
     }
   }
 
-  _onRefresh() {
+  _onRequest() {
     this.setState({ refreshing: true });
 
     const infoRequest = new GraphRequest(
@@ -53,18 +57,24 @@ export default class AppReview extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <NavigationBar title={{ title: this.props.title }} />
-        <Button raised icon={{ name: 'cached' }} title='Login' onPress={Actions.login}/>
+        <NavigationBar
+          title={{ title: this.props.title }}
+          leftButton={{
+            title: 'Logout',
+            handler: Actions.login,
+          }}
+        />
 
         <ScrollView
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
+              onRefresh={this._onRequest.bind(this)}
             />
           }
         >
-          <List containerStyle={{ marginBottom: 20 }}>
+          {this.state.pages.length === 0 && <Button raised icon={{ name: 'cached' }} title='Refresh' onPress={() => this._onRequest()}/>}
+          {this.state.pages.length !== 0 && <List containerStyle={{ marginBottom: 20 }}>
             {
               this.state.pages.map((item, i) => (
                 <ListItem
@@ -80,7 +90,7 @@ export default class AppReview extends Component {
                 />
               ))
             }
-          </List>
+          </List>}
         </ScrollView>
       </View>
     );

@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
+import { CheckBox } from 'react-native-elements';
 import { FormLabel, FormInput } from 'react-native-elements'
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
-import { CheckBox } from 'react-native-elements';
 
 export default class Publish extends Component {
   constructor(props) {
