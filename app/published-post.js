@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Dimensions,
   Image,
   ListView,
   RefreshControl,
@@ -22,6 +23,8 @@ import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
 
+const window = Dimensions.get('window');
+
 export default class publishedPost extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +34,6 @@ export default class publishedPost extends Component {
     this.state = {
       dataSource: this.dataSource.cloneWithRows([]),
       refreshing: false,
-      posts: [],
     };
   }
 
@@ -56,11 +58,10 @@ export default class publishedPost extends Component {
 
     const infoRequest = new GraphRequest(
       `/${this.props.pageId}/feed`,
-      // '/935544009880691/feed',
-      // '/1402987109960859/feed',
       {
         parameters: {
           fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
+          limit: { string: '25' },
         },
         accessToken: this.props.pageAccessToken,
       },
@@ -75,7 +76,6 @@ export default class publishedPost extends Component {
   }
 
   render() {
-    const that = this;
     return (
       <View style={styles.container}>
         <NavigationBar
@@ -107,39 +107,49 @@ export default class publishedPost extends Component {
           <ListView
             enableEmptySections={true}
             dataSource={this.state.dataSource}
-            renderRow={(item) => <Card>
-              <View style={{ flexDirection: 'row' }}>
-                <ProfilePicture userId={item.from && item.from.id} />
-                <View style={{ flexDirection: 'column', marginLeft: 5 }}>
-                  <Text style={{ fontWeight: '600', marginBottom: 3 }}>
-                    {item.from && item.from.name} {item.to && item.to.data && ` >> ${item.to.data[0].name}`}
-                  </Text>
-                  {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
-                    {`Posted by ${item.admin_creator.name}`}
-                  </Text>}
-                  <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
-                    {Moment(item.created_time).fromNow()}
-                  </Text>
+            renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
+              <View style={{ padding: 15 }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <ProfilePicture userId={item.from && item.from.id} />
+                  <View style={{ flexDirection: 'column', marginLeft: 8 }}>
+                    <Text style={{ fontWeight: '600', marginBottom: 3 }}>
+                      {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
+                    </Text>
+                    {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                      {`Posted by ${item.admin_creator.name}`}
+                    </Text>}
+                    <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
+                      {Moment(item.created_time).fromNow()}
+                    </Text>
+                  </View>
                 </View>
+
+                <ParsedText
+                  style={{ marginBottom: 10 }}
+                  parse={
+                    [
+                      { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                    ]
+                  }
+                >
+                  {item.message}
+                </ParsedText>
               </View>
 
-              <ParsedText
-                style={{ marginBottom: 10 }}
-                parse={
-                  [
-                    { type: 'url', style: styles.url, onPress: this.handleUrlPress },
-                  ]
-                }
-              >
-                {item.message}
-              </ParsedText>
               {item.full_picture && <Image
                 resizeMode={'contain'}
-                style={{ width: 310, height: 310 }}
+                style={{
+                  marginBottom: 10,
+                  width: window.width,
+                  height: 320,
+                }}
                 source={{ uri: item.full_picture }}
               />}
-              <Insight postId={item.id} pageName={that.props.pageName} pageAccessToken={that.props.pageAccessToken} />
-            </Card>}
+
+              <View style={{ padding: 15 }}>
+                <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
+              </View>
+            </View>}
           />
         </ScrollView>
       </View>
@@ -150,6 +160,7 @@ export default class publishedPost extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ECEFF1',
   },
   url: {
     color: '#1565C0',

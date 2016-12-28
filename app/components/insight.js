@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Dimensions,
   StyleSheet,
   Text,
   View,
@@ -7,6 +8,8 @@ import {
 
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Spinner from'react-native-spinkit';
+
+const window = Dimensions.get('window');
 
 export default class Insight extends Component {
   constructor(props) {
@@ -53,10 +56,17 @@ export default class Insight extends Component {
   }
 
   render() {
+    const blockWidth = window.width - 30;
     if (this.state.postImpressions === 'N/A') {
       return <Text style={styles.text}>Post impressions are not available now</Text>;
     } else if (this.state.postImpressions !== null) {
-      return <Text style={styles.text}>This post has been viewed by {this.state.postImpressions}</Text>;
+      return (<View>
+        <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * this.state.postImpressions / 5000 : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * (1 - this.state.postImpressions / 5000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
+        </View>
+      </View>);
     }
 
     return <Spinner style={styles.spinner} isVisible={true} size={20} type={'Wave'} color={'gray'}/>;
@@ -67,5 +77,6 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: '300',
     fontStyle: 'italic',
+    marginBottom: 10,
   },
 });

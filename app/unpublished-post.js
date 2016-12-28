@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import {
+  Dimensions,
+  Image,
+  ListView,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -9,22 +12,28 @@ import {
 
 import Moment from 'moment';
 
+import Cover from './components/cover';
+import ProfilePicture from './components/profile-picture';
+
 import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
+import ParsedText from 'react-native-parsed-text';
 
 export default class Post extends Component {
   constructor(props) {
     super(props);
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
+
     this.state = {
+      dataSource: this.dataSource.cloneWithRows([]),
       refreshing: false,
-      posts: [],
     };
   }
 
   componentDidMount() {
-    this._onRefresh();
+    this._onRequest();
   }
 
   _responseInfoCallback(error, result) {
@@ -33,13 +42,13 @@ export default class Post extends Component {
     } else {
       console.log('Success fetching data:', result);
       this.setState({
-        posts: result.data,
+        dataSource: this.dataSource.cloneWithRows(result.data),
         refreshing: false,
       });
     }
   }
 
-  _onRefresh() {
+  _onRequest() {
     console.log(this.props.pageId);
     this.setState({ refreshing: true });
 
@@ -75,22 +84,57 @@ export default class Post extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
+              onRefresh={this._onRequest.bind(this)}
             />
-          }
-        >
-          {
-            this.state.posts.map((item, i) => (
-              <Card key={i}>
-                <Text style={{ marginBottom: 10 }}>
+          }>
+          <Cover {...this.props} />
+
+          <ListView
+            enableEmptySections={true}
+            dataSource={this.state.dataSource}
+            renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
+              <View style={{ padding: 15 }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <ProfilePicture userId={item.from && item.from.id} />
+                  <View style={{ flexDirection: 'column', marginLeft: 8 }}>
+                    <Text style={{ fontWeight: '600', marginBottom: 3 }}>
+                      {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
+                    </Text>
+                    {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                      {`Posted by ${item.admin_creator.name}`}
+                    </Text>}
+                    {item.application && item.application.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                      {`Posted by ${item.application.name}`}
+                    </Text>}
+                    <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
+                      {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`}
+                    </Text>
+                  </View>
+                </View>
+
+                <ParsedText
+                  style={{ marginBottom: 10 }}
+                  parse={
+                    [
+                      { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                    ]
+                  }
+                >
                   {item.message}
-                </Text>
-                <Text style={{ marginBottom: 10 }}>
-                  {Moment(item.created_time).fromNow()}
-                </Text>
-              </Card>
-            ))
-          }
+                </ParsedText>
+              </View>
+
+              {item.full_picture && <Image
+                resizeMode={'contain'}
+                style={{
+                  marginBottom: 10,
+                  width: window.width,
+                  height: 320,
+                }}
+                source={{ uri: item.full_picture }}
+              />}
+            </View>}
+          />
         </ScrollView>
       </View>
     );
@@ -100,5 +144,10 @@ export default class Post extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ECEFF1',
+  },
+  url: {
+    color: '#1565C0',
+    textDecorationLine: 'underline',
   },
 });

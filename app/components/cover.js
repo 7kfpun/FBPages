@@ -61,9 +61,9 @@ export default class Cover extends Component {
       >
         <View style={styles.body}>
           <View style={{ flexDirection: 'row' }}>
-            <ProfilePicture userId={this.props.pageId} />
+            <ProfilePicture userId={this.props.pageId} width={70} />
             <View style={styles.textBlock}>
-              <Text style={styles.text}>{this.props.pageName}</Text>
+              <Text style={styles.headlineText}>{this.props.pageName}</Text>
               <Text style={styles.text}>{this.props.pageCategory}</Text>
             </View>
           </View>
@@ -82,17 +82,32 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    padding: 10,
+    padding: 15,
   },
   textBlock: {
+    flex: 1,
     flexDirection: 'column',
-    marginLeft: 5,
+    marginLeft: 10,
+  },
+  headlineText: {
+    backgroundColor: 'rgba(0,0,0,0)',
+    color: 'white',
+    fontSize: 18,
+    lineHeight: 24,
+    textShadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    textShadowRadius: 1,
+    textShadowColor: 'black',
+    marginBottom: 8,
   },
   text: {
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
     textShadowOffset: {
-      width: 1, height: 1,
+      width: 1,
+      height: 1,
     },
     textShadowRadius: 1,
     textShadowColor: 'black',

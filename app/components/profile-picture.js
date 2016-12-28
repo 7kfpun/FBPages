@@ -49,9 +49,9 @@ export default class ProfilePicture extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={{ width: this.props.width }}>
         <Image
-          style={{ width: 40, height: 40 }}
+          style={{ width: this.props.width, height: this.props.width }}
           source={{ uri: this.state.url }}
         />
       </View>
@@ -60,7 +60,9 @@ export default class ProfilePicture extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: 40,
-  },
+  container: {},
 });
+
+ProfilePicture.defaultProps = {
+  width: 40,
+}
