@@ -18,6 +18,7 @@ import ProfilePicture from './components/profile-picture';
 import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
 
@@ -60,7 +61,7 @@ export default class Post extends Component {
       {
         parameters: {
           is_published: { string: 'false' },
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type,scheduled_publish_time' },
         },
       },
       (error, result) => this._responseInfoCallback(error, result),
@@ -107,7 +108,7 @@ export default class Post extends Component {
                       {`Posted by ${item.application.name}`}
                     </Text>}
                     <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
-                      {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`}
+                      {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
                     </Text>
                   </View>
                 </View>

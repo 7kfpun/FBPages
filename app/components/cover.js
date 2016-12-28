@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   headlineText: {
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     lineHeight: 24,
     textShadowOffset: {
       width: 1,

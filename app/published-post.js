@@ -20,6 +20,7 @@ import ProfilePicture from './components/profile-picture';
 import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
 
@@ -60,7 +61,7 @@ export default class publishedPost extends Component {
       `/${this.props.pageId}/feed`,
       {
         parameters: {
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
+          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type' },
           limit: { string: '25' },
         },
         accessToken: this.props.pageAccessToken,
@@ -119,7 +120,7 @@ export default class publishedPost extends Component {
                       {`Posted by ${item.admin_creator.name}`}
                     </Text>}
                     <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
-                      {Moment(item.created_time).fromNow()}
+                      {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
                     </Text>
                   </View>
                 </View>

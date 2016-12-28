@@ -75,8 +75,8 @@ export default class Insight extends Component {
 
 const styles = StyleSheet.create({
   text: {
+    fontSize: 11,
     fontWeight: '300',
-    fontStyle: 'italic',
-    marginBottom: 10,
+    marginBottom: 6,
   },
 });
