@@ -3,6 +3,7 @@ import {
   Image,
   ListView,
   RefreshControl,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +20,7 @@ import { Actions } from 'react-native-router-flux';
 import { Card, ListItem, Button } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
+import ParsedText from 'react-native-parsed-text';
 
 export default class publishedPost extends Component {
   constructor(props) {
@@ -66,6 +68,10 @@ export default class publishedPost extends Component {
     );
 
     new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  handleUrlPress(url) {
+    Linking.openURL(url);
   }
 
   render() {
@@ -117,9 +123,16 @@ export default class publishedPost extends Component {
                 </View>
               </View>
 
-              <Text style={{ marginBottom: 10 }}>
+              <ParsedText
+                style={{ marginBottom: 10 }}
+                parse={
+                  [
+                    { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                  ]
+                }
+              >
                 {item.message}
-              </Text>
+              </ParsedText>
               {item.full_picture && <Image
                 resizeMode={'contain'}
                 style={{ width: 310, height: 310 }}
@@ -137,5 +150,9 @@ export default class publishedPost extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  url: {
+    color: '#1565C0',
+    textDecorationLine: 'underline',
   },
 });
