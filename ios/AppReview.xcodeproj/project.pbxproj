@@ -945,8 +945,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kfpun.facebook.AppReview;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kfpun.facebook.appreview.fbpages;
 				PRODUCT_NAME = AppReview;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -968,8 +969,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kfpun.facebook.AppReview;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kfpun.facebook.appreview.fbpages;
 				PRODUCT_NAME = AppReview;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
