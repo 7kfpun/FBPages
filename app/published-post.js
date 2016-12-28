@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import {
   Dimensions,
   Image,
+  Linking,
   ListView,
   RefreshControl,
-  Linking,
-  ScrollView,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
 
 import Moment from 'moment';
+import Parse from 'url-parse';
 
 import Cover from './components/cover';
 import Insight from './components/insight';
@@ -29,12 +30,13 @@ const window = Dimensions.get('window');
 export default class publishedPost extends Component {
   constructor(props) {
     super(props);
-
     this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
 
     this.state = {
-      dataSource: this.dataSource.cloneWithRows([]),
       refreshing: false,
+      posts: [],
+      dataSource: this.dataSource.cloneWithRows([]),
+      nextUntil: null,
     };
   }
 
@@ -49,8 +51,42 @@ export default class publishedPost extends Component {
       console.log('Success fetching feed:', result);
       this.setState({
         dataSource: this.dataSource.cloneWithRows(result.data),
+        posts: result.data,
         refreshing: false,
       });
+
+      if (result.paging) {
+        let url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+        }
+      }
+    }
+  }
+
+  _responsePagingInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      let newPosts = this.state.posts.concat(result.data);
+
+      this.setState({
+        dataSource: this.dataSource.cloneWithRows(newPosts),
+        posts: newPosts,
+      });
+
+      if (result.paging) {
+        let url = Parse(result.paging.next, true);
+        if (url.query.until) {
+          this.setState({
+            nextUntil: url.query.until,
+          });
+          // alert(url.query.until);
+        }
+      }
     }
   }
 
@@ -62,7 +98,7 @@ export default class publishedPost extends Component {
       {
         parameters: {
           fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type' },
-          limit: { string: '25' },
+          limit: { string: '5' },
         },
         accessToken: this.props.pageAccessToken,
       },
@@ -70,6 +106,25 @@ export default class publishedPost extends Component {
     );
 
     new GraphRequestManager().addRequest(infoRequest).start();
+  }
+
+  _onPagingRequest() {
+    if (this.state.nextUntil) {
+      const infoRequest = new GraphRequest(
+        `/${this.props.pageId}/feed`,
+        {
+          parameters: {
+            fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type' },
+            limit: { string: '5' },
+            until: { string: `${parseInt(this.state.nextUntil) - 2}` },
+          },
+          accessToken: this.props.pageAccessToken,
+        },
+        (error, result) => this._responsePagingInfoCallback(error, result),
+      );
+
+      new GraphRequestManager().addRequest(infoRequest).start();
+    }
   }
 
   handleUrlPress(url) {
@@ -96,63 +151,90 @@ export default class publishedPost extends Component {
           }}
         />
 
-        <ScrollView
+        <ListView
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this._onRequest.bind(this)}
             />
-          }>
-          <Cover {...this.props} />
+          }
 
-          <ListView
-            enableEmptySections={true}
-            dataSource={this.state.dataSource}
-            renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
-              <View style={{ padding: 15 }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <ProfilePicture userId={item.from && item.from.id} />
-                  <View style={{ flexDirection: 'column', marginLeft: 8 }}>
-                    <Text style={{ fontWeight: '400', marginBottom: 3 }}>
-                      {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
-                    </Text>
-                    {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
-                      {`Posted by ${item.admin_creator.name}`}
-                    </Text>}
-                    <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
-                      {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
-                    </Text>
-                  </View>
+          enableEmptySections={true}
+          onEndReached={() => {
+            console.log('onEndReached');
+            this._onPagingRequest();
+          }}
+          dataSource={this.state.dataSource}
+
+          renderHeader={() => <Cover {...this.props} />}
+          renderRow={(item) => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
+            <View style={{ padding: 15 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <ProfilePicture userId={item.from && item.from.id} />
+                <View style={{ flexDirection: 'column', marginLeft: 8 }}>
+                  <Text style={{ fontWeight: '400', marginBottom: 3 }}>
+                    {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
+                  </Text>
+                  {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                    {`Posted by ${item.admin_creator.name}`}
+                  </Text>}
+                  <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
+                    {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
+                  </Text>
                 </View>
-
-                <ParsedText
-                  style={{ fontWeight: '400', marginBottom: 10, lineHeight: 22 }}
-                  parse={
-                    [
-                      { type: 'url', style: styles.url, onPress: this.handleUrlPress },
-                    ]
-                  }
-                >
-                  {item.message}
-                </ParsedText>
               </View>
 
-              {item.full_picture && <Image
-                resizeMode={'contain'}
-                style={{
-                  marginBottom: 10,
-                  width: window.width,
-                  height: 280,
-                }}
-                source={{ uri: item.full_picture }}
-              />}
+              <ParsedText
+                style={{ fontWeight: '400', marginBottom: 10, lineHeight: 22 }}
+                parse={
+                  [
+                    { type: 'url', style: styles.url, onPress: this.handleUrlPress },
+                  ]
+                }
+              >
+                {item.message}
+              </ParsedText>
+            </View>
 
-              <View style={{ padding: 15 }}>
-                <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
+
+            {!(item.type === 'link' || item.type === 'video') && item.full_picture && <Image
+              resizeMode={'contain'}
+              style={{
+                marginBottom: 10,
+                width: window.width,
+                height: 280,
+              }}
+              source={{ uri: item.full_picture }}
+            />}
+
+            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor='white' onPress={() => Linking.openURL(item.link) }>
+              <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
+                {item.full_picture && <Image
+                  resizeMode={'contain'}
+                  style={{
+                    marginBottom: 10,
+                    width: window.width - 50,
+                    height: 200,
+                  }}
+                  source={{ uri: item.full_picture }}
+                />}
+                {item.name && <Text style={{ fontWeight: '400', marginBottom: 3 }}>
+                  {item.name && item.name.slice(0, 40)}
+                </Text>}
+                {item.description && <Text style={{ fontWeight: '200', marginBottom: 3 }}>
+                  {item.description}
+                </Text>}
+                {item.caption && <Text style={{ fontWeight: '200', color: 'gray', marginBottom: 3 }}>
+                  {item.caption}
+                </Text>}
               </View>
-            </View>}
-          />
-        </ScrollView>
+            </TouchableHighlight>}
+
+            <View style={{ padding: 15 }}>
+              <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
+            </View>
+          </View>}
+        />
       </View>
     );
   }

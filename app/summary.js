@@ -10,8 +10,7 @@ import {
 import Cover from './components/cover';
 
 import { Actions } from 'react-native-router-flux';
-import { Button } from 'react-native-elements';
-import { FormLabel } from 'react-native-elements'
+import { FormLabel } from 'react-native-elements';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { List, ListItem } from 'react-native-elements';
 import NavigationBar from 'react-native-navbar';
@@ -23,10 +22,15 @@ export default class Summary extends Component {
     this.state = {
       publishedPostsLength: 0,
       unpublishedPostsLength: 0,
+      refreshing: false,
     };
   }
 
   componentDidMount() {
+    this._onRefresh();
+  }
+
+  _onRefresh() {
     this._onPublishedRequest();
     this._onUnpublishedRequest();
   }
@@ -43,6 +47,7 @@ export default class Summary extends Component {
       } else {
         this.setState({
           publishedPostsLength: result.data.length,
+          refreshing: false,
         });
       }
     }
@@ -60,12 +65,15 @@ export default class Summary extends Component {
       } else {
         this.setState({
           unpublishedPostsLength: result.data.length,
+          refreshing: false,
         });
       }
     }
   }
 
   _onPublishedRequest() {
+    this.setState({ refreshing: true });
+
     const infoRequest = new GraphRequest(
       `/${this.props.pageId}/feed`,
       {
@@ -82,6 +90,8 @@ export default class Summary extends Component {
   }
 
   _onUnpublishedRequest() {
+    this.setState({ refreshing: true });
+
     const infoRequest = new GraphRequest(
       `/${this.props.pageId}/promotable_posts`,
       {
@@ -106,18 +116,27 @@ export default class Summary extends Component {
             title: 'Back',
             handler: Actions.pop,
           }}
+          rightButton={{
+            title: 'Publish',
+            handler: () => Actions.publish({
+              pageId: this.props.pageId,
+              pageName: this.props.pageName,
+              pageCategory: this.props.pageCategory,
+              pageAccessToken: this.props.pageAccessToken,
+            })
+          }}
         />
 
-        <Cover {...this.props} />
-
         <ScrollView
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={this.state.refreshing}
-          //     onRefresh={this._onRefresh.bind(this)}
-          //   />
-          // }
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
         >
+          <Cover {...this.props} />
+
           <List containerStyle={{ marginBottom: 20 }}>
             <ListItem
               title={'Published Posts'}
@@ -143,19 +162,6 @@ export default class Summary extends Component {
             />
           </List>
         </ScrollView>
-
-        <Button
-          raised
-          icon={{ name: 'edit' }}
-          title='Publish'
-          onPress={() => Actions.publish({
-            pageId: this.props.pageId,
-            pageName: this.props.pageName,
-            pageCategory: this.props.pageCategory,
-            pageAccessToken: this.props.pageAccessToken,
-          })}
-        />
-
       </View>
     );
   }
@@ -164,5 +170,6 @@ export default class Summary extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ECEFF1',
   },
 });

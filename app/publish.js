@@ -7,10 +7,14 @@ import {
   View,
 } from 'react-native';
 
+import ProfilePicture from './components/profile-picture';
+
 import { Actions } from 'react-native-router-flux';
 import { CheckBox } from 'react-native-elements';
 import { FormLabel, FormInput } from 'react-native-elements'
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
 
 export default class Publish extends Component {
@@ -49,9 +53,6 @@ export default class Publish extends Component {
   }
 
   _onPosting() {
-    console.log(this.props.pageId, this.props.pageAccessToken);
-    console.log(this.state.date.getTime());
-
     var parameters;
     if (this.state.checked) {
       parameters = {
@@ -88,13 +89,25 @@ export default class Publish extends Component {
             handler: () => this.pop(),
           }}
           rightButton={{
-            title: this.state.text ? 'Continue' : '',
+            title: this.state.text ? 'Post' : '',
             handler: () => this._onPosting(),
           }}
         />
 
+        <View style={{ margin: 15, flexDirection: 'row' }}>
+          <ProfilePicture userId={this.props.pageId} />
+          <View style={{ flexDirection: 'column', marginLeft: 8 }}>
+            <Text style={{ fontWeight: '400', marginBottom: 3 }}>
+              {this.props.pageName}
+            </Text>
+            <Text style={{ color: 'gray', marginBottom: 3 }}>
+              <Icon name="public" size={11} color="gray" /> Public
+            </Text>
+          </View>
+        </View>
+
         <View style={{ flex: 1 }}>
-          <FormInput onChangeText={(text) => this.setState({ text })} />
+          <FormInput onChangeText={text => this.setState({ text })} multiline = {true} numberOfLines = {4} placeholder={'Write something...'} />
         </View>
 
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -113,6 +126,8 @@ export default class Publish extends Component {
             timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
             onDateChange={(date) => this.setState({ date })}
           />}
+
+          <KeyboardSpacer />
         </View>
       </View>
     );

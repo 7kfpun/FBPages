@@ -17,7 +17,7 @@ import UnpublishedPost from './app/unpublished-post';
 
 const scenes = Actions.create(
   <Scene key="root">
-    <Scene key="main" title={'Main'} component={Main} hideNavBar={true} initial={true} />
+    <Scene key="main" title={'Pages⚑⚑'} component={Main} hideNavBar={true} initial={true} />
     <Scene key="login" title={'Login'} component={Login} hideNavBar={true} direction="vertical" panHandlers={null} />
     <Scene key="summary" title={'Summary'} component={Summary} hideNavBar={true} />
     <Scene key="publish" title={'Publish'} component={Publish} hideNavBar={true} direction="vertical" />
