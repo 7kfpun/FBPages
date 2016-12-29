@@ -14,7 +14,7 @@ function graphRequest(path, parameters, accessToken, callback) {
   new GraphRequestManager().addRequest(infoRequest).start();
 }
 
-export const accounts = callback => graphRequest('/me/accounts', { fields: { string: 'id,name,category,picture,access_token,cover' } }, null, callback);
+export const accounts = callback => graphRequest('/me/accounts', { fields: { string: 'id,name,category,picture,access_token,cover' }, limit: { string: '100' } }, null, callback);
 
 export const FEED_PUBLISHED = 'published';
 export const FEED_UNPUBLISHED = 'unpublished';

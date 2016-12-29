@@ -35,6 +35,10 @@ export default class Summary extends Component {
     this.onRefresh();
   }
 
+  componentWillReceiveProps() {
+    this.onRefresh();
+  }
+
   onRefresh() {
     this.onPublishedRequest();
     this.onUnpublishedRequest();
@@ -59,13 +63,20 @@ export default class Summary extends Component {
         this.setState({
           publishedPostsLength: '100+',
         });
+      } else if (result.data) {
+        this.setState({
+          publishedPostsLength: result.data.length,
+        });
       } else {
         this.setState({
-          publishedPostsLength: (result.data && result.data.length) || 0,
-          refreshing: false,
+          publishedPostsLength: 0,
         });
       }
     }
+
+    this.setState({
+      refreshing: false,
+    });
   }
 
   responseUnpublishedInfoCallback(error, result) {
@@ -77,13 +88,20 @@ export default class Summary extends Component {
         this.setState({
           unpublishedPostsLength: '100+',
         });
+      } else if (result.data) {
+        this.setState({
+          unpublishedPostsLength: result.data.length,
+        });
       } else {
         this.setState({
-          unpublishedPostsLength: (result.data && result.data.length) || 0,
-          refreshing: false,
+          unpublishedPostsLength: 0,
         });
       }
     }
+
+    this.setState({
+      refreshing: false,
+    });
   }
 
   render() {

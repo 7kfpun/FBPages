@@ -1,9 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View,
 } from 'react-native';
 
 import { Actions, Router, Scene } from 'react-native-router-flux';
@@ -23,7 +20,7 @@ const scenes = Actions.create(
     <Scene key="publish" title={'Publish'} component={Publish} hideNavBar={true} direction="vertical" />
     <Scene key="publishedPost" title={'Published Posts'} component={PublishedPost} hideNavBar={true} />
     <Scene key="unpublishedPost" title={'Scheduled Posts'} component={UnpublishedPost} hideNavBar={true} />
-  </Scene>
+  </Scene>,
 );
 
 const AppReview = function Photos() {

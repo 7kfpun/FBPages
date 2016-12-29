@@ -55,7 +55,7 @@ export default class Login extends Component {
     AccessToken.getCurrentAccessToken().then(
       (data) => {
         console.log(data);
-        if (data.expirationTime > new Date().getTime()) {
+        if (data.expirationTime && data.expirationTime > new Date().getTime()) {
           this.setState({ isLogged: true });
         }
       },
@@ -94,6 +94,7 @@ export default class Login extends Component {
                       (data) => {
                         console.log(data);
                         Actions.pop();
+                        Actions.refresh();
                       },
                     );
                   }

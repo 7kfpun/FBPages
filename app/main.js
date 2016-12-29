@@ -7,9 +7,9 @@ import {
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
-import { Button, List, ListItem } from 'react-native-elements';
-import NavigationBar from 'react-native-navbar';
+import { List, ListItem } from 'react-native-elements';
 import CacheStore from 'react-native-cache-store';
+import NavigationBar from 'react-native-navbar';
 
 import * as Facebook from './utils/facebook';
 
@@ -34,7 +34,12 @@ export default class Main extends Component {
     CacheStore.flush();
   }
 
+  componentWillReceiveProps() {
+    this.onRequest();
+  }
+
   onRequest() {
+    console.log('onRequest accounts');
     this.setState({ refreshing: true });
     Facebook.accounts((error, result) => this.responseInfoCallback(error, result));
   }
@@ -74,12 +79,10 @@ export default class Main extends Component {
             />
           }
         >
-          {this.state.pages.length === 0 && <Button raised icon={{ name: 'cached' }} title={'Refresh'} onPress={() => this.onRequest()} />}
-          {this.state.pages.length !== 0 && <List containerStyle={{ marginBottom: 20 }}>
+          <List containerStyle={{ marginBottom: 20 }}>
             {
               this.state.pages.map((item, i) => (
                 <ListItem
-                  roundAvatar
                   key={i}
                   avatar={item.picture && item.picture.data && item.picture.data.url}
                   title={item.name}
@@ -95,7 +98,7 @@ export default class Main extends Component {
                 />
               ))
             }
-          </List>}
+          </List>
         </ScrollView>
       </View>
     );

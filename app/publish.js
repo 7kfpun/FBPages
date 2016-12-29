@@ -44,10 +44,14 @@ export default class Publish extends Component {
 
   responseInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error);
+      console.log('Error fetching data:', error, error.message);
+      if (error && error.message) {
+        alert(error.message);
+      }
     } else {
       console.log('Success fetching data:', result);
       Actions.pop();
+      Actions.refresh({ addNew: true });
     }
   }
 

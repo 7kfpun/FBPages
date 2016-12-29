@@ -51,9 +51,13 @@ export default class UnpublishedPost extends Component {
     this.onRequest();
   }
 
+  componentWillReceiveProps() {
+    this.onRequest();
+  }
+
   onRequest() {
     this.setState({ refreshing: true });
-    Facebook.feed(this.props.pageId, Facebook.FEED_UNPUBLISHED, 4, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    Facebook.feed(this.props.pageId, Facebook.FEED_UNPUBLISHED, 10, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
   }
 
   onPagingRequest() {
@@ -61,17 +65,19 @@ export default class UnpublishedPost extends Component {
       fetch(this.state.pagingNext).then(res => res.json())
         .then((result) => {
           console.log('pagingNext', result);
-          const newPosts = this.state.posts.concat(result.data);
+          if (result.data && result.data.length) {
+            const newPosts = this.state.posts.concat(result.data);
 
-          this.setState({
-            dataSource: this.dataSource.cloneWithRows(newPosts),
-            posts: newPosts,
-          });
-
-          if (result.paging && result.paging.next) {
             this.setState({
-              pagingNext: result.paging.next,
+              dataSource: this.dataSource.cloneWithRows(newPosts),
+              posts: newPosts,
             });
+
+            if (result.paging && result.paging.next) {
+              this.setState({
+                pagingNext: result.paging.next,
+              });
+            }
           }
         });
     }
