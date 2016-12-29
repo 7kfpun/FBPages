@@ -73,6 +73,19 @@ export const publish = (pageId, publishedOrUnpublished, text, scheduledPublishTi
   new GraphRequestManager().addRequest(infoRequest).start();
 };
 
+export const deletePost = (postId, pageAccessToken, callback) => {
+  const infoRequest = new GraphRequest(
+    `/${postId}`,
+    {
+      httpMethod: 'DELETE',
+      accessToken: pageAccessToken,
+    },
+    (error, result) => callback(error, result),
+  );
+
+  new GraphRequestManager().addRequest(infoRequest).start();
+};
+
 export const insights = (postId, pageAccessToken, callback) => {
   graphRequest(
     `/${postId}/insights/post_impressions_unique/lifetime`,

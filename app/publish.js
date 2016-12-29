@@ -9,10 +9,11 @@ import {
 
 import { Actions } from 'react-native-router-flux';
 import { FormInput } from 'react-native-elements';
+import { SegmentedControls } from 'react-native-radio-buttons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
-import { SegmentedControls } from 'react-native-radio-buttons';
+import Toast from 'react-native-root-toast';
 
 import ProfilePicture from './components/profile-picture';
 
@@ -56,6 +57,7 @@ export default class Publish extends Component {
       console.log('Success fetching data:', result);
       Actions.pop();
       Actions.refresh({ addNew: true });
+      Toast.show('Posted successfully');
     }
   }
 

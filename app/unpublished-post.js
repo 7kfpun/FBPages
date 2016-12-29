@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  ActionSheetIOS,
   Dimensions,
   Image,
   ListView,
@@ -15,6 +16,7 @@ import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
+import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
 import ProfilePicture from './components/profile-picture';
@@ -102,6 +104,16 @@ export default class UnpublishedPost extends Component {
     }
   }
 
+  responseDeleteInfoCallback(error, result) {
+    if (error) {
+      console.log('Error fetching feed:', error);
+    } else {
+      console.log('Success fetching feed:', result);
+      Toast.show('Deleted successfully');
+      this.onRequest();
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -152,6 +164,33 @@ export default class UnpublishedPost extends Component {
                   <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
                     {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
                   </Text>
+                </View>
+                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                  <Icon
+                    name="expand-more"
+                    size={18}
+                    color="gray"
+                    onPress={() => {
+                      const BUTTONS = [
+                        'Delete',
+                        'Cancel',
+                      ];
+                      const DESTRUCTIVE_INDEX = 0;
+                      const CANCEL_INDEX = 1;
+
+                      ActionSheetIOS.showActionSheetWithOptions({
+                        options: BUTTONS,
+                        cancelButtonIndex: CANCEL_INDEX,
+                        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+                      },
+                      (buttonIndex) => {
+                        if (buttonIndex === 0) {
+                          console.log('Delete post', item);
+                          Facebook.deletePost(item.id, this.props.pageAccessToken, (error, result) => this.responseDeleteInfoCallback(error, result));
+                        }
+                      });
+                    }}
+                  />
                 </View>
               </View>
 
