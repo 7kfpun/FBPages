@@ -62,7 +62,7 @@ export default class Insight extends Component {
         <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
-          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * ((1 - this.state.postImpressions) / 3000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * (1 - (this.state.postImpressions / 3000)) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
         </View>
       </View>);
     }

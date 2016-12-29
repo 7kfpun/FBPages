@@ -126,6 +126,10 @@ export default class publishedPost extends Component {
       <View style={styles.container}>
         <NavigationBar
           title={{ title: this.props.title }}
+          style={{
+            borderBottomWidth: StyleSheet.hairlineWidth * 2,
+            borderBottomColor: '#E0E0E0',
+          }}
           leftButton={{
             title: 'Back',
             handler: Actions.pop,
