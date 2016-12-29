@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  ActionSheetIOS,
   Dimensions,
   Image,
   ListView,
@@ -19,6 +18,7 @@ import ParsedText from 'react-native-parsed-text';
 import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
+import DeleteIcon from './components/delete-icon';
 import ProfilePicture from './components/profile-picture';
 
 import * as Facebook from './utils/facebook';
@@ -118,7 +118,10 @@ export default class UnpublishedPost extends Component {
     return (
       <View style={styles.container}>
         <NavigationBar
-          title={{ title: this.props.title }}
+          title={{
+            title: this.props.title,
+            style: { fontSize: 16 },
+          }}
           style={{
             borderBottomWidth: StyleSheet.hairlineWidth * 2,
             borderBottomColor: '#E0E0E0',
@@ -170,31 +173,7 @@ export default class UnpublishedPost extends Component {
                   </Text>
                 </View>
                 <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                  <Icon
-                    name="expand-more"
-                    size={18}
-                    color="gray"
-                    onPress={() => {
-                      const BUTTONS = [
-                        'Delete',
-                        'Cancel',
-                      ];
-                      const DESTRUCTIVE_INDEX = 0;
-                      const CANCEL_INDEX = 1;
-
-                      ActionSheetIOS.showActionSheetWithOptions({
-                        options: BUTTONS,
-                        cancelButtonIndex: CANCEL_INDEX,
-                        destructiveButtonIndex: DESTRUCTIVE_INDEX,
-                      },
-                      (buttonIndex) => {
-                        if (buttonIndex === 0) {
-                          console.log('Delete post', item);
-                          Facebook.deletePost(item.id, this.props.pageAccessToken, (error, result) => this.responseDeleteInfoCallback(error, result));
-                        }
-                      });
-                    }}
-                  />
+                  <DeleteIcon postId={item.id} pageAccessToken={this.props.pageAccessToken} callback={(error, result) => this.responseDeleteInfoCallback(error, result)} />
                 </View>
               </View>
 

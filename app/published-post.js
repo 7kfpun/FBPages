@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  ActionSheetIOS,
   Dimensions,
   Image,
   Linking,
@@ -21,6 +20,7 @@ import ParsedText from 'react-native-parsed-text';
 import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
+import DeleteIcon from './components/delete-icon';
 import Insight from './components/insight';
 import ProfilePicture from './components/profile-picture';
 
@@ -177,31 +177,7 @@ export default class publishedPost extends Component {
                   </Text>
                 </View>
                 <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                  <Icon
-                    name="expand-more"
-                    size={18}
-                    color="gray"
-                    onPress={() => {
-                      const BUTTONS = [
-                        'Delete',
-                        'Cancel',
-                      ];
-                      const DESTRUCTIVE_INDEX = 0;
-                      const CANCEL_INDEX = 1;
-
-                      ActionSheetIOS.showActionSheetWithOptions({
-                        options: BUTTONS,
-                        cancelButtonIndex: CANCEL_INDEX,
-                        destructiveButtonIndex: DESTRUCTIVE_INDEX,
-                      },
-                      (buttonIndex) => {
-                        if (buttonIndex === 0) {
-                          console.log('Delete post', item);
-                          Facebook.deletePost(item.id, this.props.pageAccessToken, (error, result) => this.responseDeleteInfoCallback(error, result));
-                        }
-                      });
-                    }}
-                  />
+                  <DeleteIcon postId={item.id} pageAccessToken={this.props.pageAccessToken} callback={(error, result) => this.responseDeleteInfoCallback(error, result)} />
                 </View>
               </View>
 
