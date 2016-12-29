@@ -2,15 +2,22 @@ import React, { Component } from 'react';
 import {
   Alert,
   DatePickerIOS,
+  Dimensions,
+  Image,
+  Platform,
   StyleSheet,
+  TouchableHighlight,
   Text,
   View,
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
 import { FormInput } from 'react-native-elements';
+import { RNS3 } from 'react-native-aws3';
 import { SegmentedControls } from 'react-native-radio-buttons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ImagePicker from 'react-native-image-picker';
+import ImageResizer from 'react-native-image-resizer';  // eslint-disable-line import/no-unresolved,import/extensions
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
 import Toast from 'react-native-root-toast';
@@ -18,6 +25,9 @@ import Toast from 'react-native-root-toast';
 import ProfilePicture from './components/profile-picture';
 
 import * as Facebook from './utils/facebook';
+import { config } from '../config';
+
+const window = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -38,12 +48,55 @@ export default class Publish extends Component {
   }
 
   onRequest() {
-    if (this.state.selectedOption === 'Post now') {
-      Facebook.publish(this.props.pageId, Facebook.POST_PUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
-    } else if (this.state.selectedOption === 'Post later') {
-      Facebook.publish(this.props.pageId, Facebook.POST_UNPUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
-    } else if (this.state.selectedOption === 'Schedule') {
-      Facebook.publish(this.props.pageId, Facebook.POST_SCHEDULE, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    if (this.state.source) {
+      ImageResizer.createResizedImage(this.state.uri, 600, 600, 'JPEG', 60).then((resizedImageUri) => {
+        console.log('resizedImageUri', resizedImageUri);
+
+        const file = {
+          uri: resizedImageUri,
+          name: resizedImageUri.split('/').pop(),
+          type: 'image/jpg',
+        };
+        const s3Options = Object.assign(config.s3, { keyPrefix: 'fbpages/' });
+
+        Toast.show('Uploading...');
+        RNS3.put(file, s3Options).then((res) => {
+          if (res.status !== 201) {
+            console.log(res);
+            throw new Error('Failed to upload image to S3');
+          }
+          console.log('S3 uploaded', res.body);
+          if (res.body && res.body.postResponse && res.body.postResponse.location) {
+            if (this.state.selectedOption === 'Post now') {
+              Facebook.publishPhoto(this.props.pageId, Facebook.POST_PUBLISHED, res.body.postResponse.location, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+            } else if (this.state.selectedOption === 'Post later') {
+              Facebook.publishPhoto(this.props.pageId, Facebook.POST_UNPUBLISHED, res.body.postResponse.location, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+            } else if (this.state.selectedOption === 'Schedule') {
+              Facebook.publishPhoto(this.props.pageId, Facebook.POST_SCHEDULE, res.body.postResponse.location, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+            }
+          }
+        })
+        .progress((e) => {
+          console.log(e.loaded / e.total);
+          if (e.loaded / e.total < 1) {
+            // that.setState({ status: 'UPLOADING' });
+          } else if (e.loaded / e.total === 1) {
+            Toast.show('Uploaded...');
+          }
+        });
+      }).catch((err) => {
+        console.log('ImageResizer', err);
+      });
+    }
+
+    if (!this.state.source && this.state.text) {
+      if (this.state.selectedOption === 'Post now') {
+        Facebook.publish(this.props.pageId, Facebook.POST_PUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+      } else if (this.state.selectedOption === 'Post later') {
+        Facebook.publish(this.props.pageId, Facebook.POST_UNPUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+      } else if (this.state.selectedOption === 'Schedule') {
+        Facebook.publish(this.props.pageId, Facebook.POST_SCHEDULE, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+      }
     }
   }
 
@@ -62,7 +115,7 @@ export default class Publish extends Component {
   }
 
   pop() {
-    if (this.state.text) {
+    if (this.state.text || this.state.source) {
       Alert.alert(
         'Discard Post?',
         null,
@@ -74,6 +127,32 @@ export default class Publish extends Component {
     } else {
       Actions.pop();
     }
+  }
+
+  imagePick() {
+    ImagePicker.showImagePicker(null, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        console.log('Image uri', response.uri);
+
+        let source;
+        if (Platform.OS === 'ios') {
+          source = { uri: response.uri.replace('file://', ''), isStatic: true };
+        } else {
+          source = { uri: response.uri, isStatic: true };
+        }
+
+        this.setState({
+          source,
+          uri: response.uri,
+        });
+      }
+    });
   }
 
   render() {
@@ -90,12 +169,12 @@ export default class Publish extends Component {
             handler: () => this.pop(),
           }}
           rightButton={{
-            title: this.state.text ? 'Post' : '',
+            title: (this.state.text || this.state.source) ? 'Post' : '',
             handler: () => this.onRequest(),
           }}
         />
 
-        <View style={{ margin: 15, flexDirection: 'row' }}>
+        <View style={{ flex: 1, alignItems: 'flex-start', margin: 15, flexDirection: 'row' }}>
           <ProfilePicture pageId={this.props.pageId} />
           <View style={{ flexDirection: 'column', marginLeft: 8 }}>
             <Text style={{ fontWeight: '400', marginBottom: 3 }}>
@@ -107,11 +186,24 @@ export default class Publish extends Component {
           </View>
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 6 }}>
           <FormInput onChangeText={text => this.setState({ text })} multiline numberOfLines={4} placeholder={'Write something...'} />
+
+          <View style={{ margin: 22, flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Icon name="camera-alt" size={20} color="gray" onPress={() => this.imagePick()} />
+          </View>
+          {this.state.source && <TouchableHighlight underlayColor="white" onPress={() => this.setState({ source: null })}>
+            <Image
+              resizeMode={'contain'}
+              style={{ justifyContent: 'center', alignItems: 'center', width: window.width, height: window.width * (2 / 3) }}
+              source={this.state.source}
+            >
+              <Icon name="highlight-off" size={60} color="white" style={{ backgroundColor: 'rgba(0,0,0,0)' }} />
+            </Image>
+          </TouchableHighlight>}
         </View>
 
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <View style={{ flex: 6, justifyContent: 'flex-end', backgroundColor: this.state.selectedOption === 'Schedule' ? 'white' : 'rgba(0,0,0,0)' }}>
           <SegmentedControls
             containerStyle={{ margin: 10 }}
             options={['Post now', 'Post later', 'Schedule']}
@@ -125,8 +217,8 @@ export default class Publish extends Component {
             timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
             onDateChange={date => this.setState({ date })}
           />}
-          <KeyboardSpacer />
         </View>
+        <KeyboardSpacer />
       </View>
     );
   }

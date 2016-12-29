@@ -120,7 +120,7 @@ export default class UnpublishedPost extends Component {
         <NavigationBar
           title={{
             title: this.props.title,
-            style: { fontSize: 16 },
+            style: { fontSize: 14 },
           }}
           style={{
             borderBottomWidth: StyleSheet.hairlineWidth * 2,

@@ -47,7 +47,7 @@ export const POST_PUBLISHED = 'published';
 export const POST_UNPUBLISHED = 'unpublished';
 export const POST_SCHEDULE = 'schedule';
 
-export const publish = (pageId, publishedOrUnpublished, text, scheduledPublishTime, pageAccessToken, callback) => {
+export const publish = (pageId, publishedOrUnpublished = POST_PUBLISHED, text, scheduledPublishTime, pageAccessToken, callback) => {
   const parameters = {
     message: { string: text },
   };
@@ -93,4 +93,34 @@ export const insights = (postId, pageAccessToken, callback) => {
     pageAccessToken,
     callback,
   );
+};
+
+export const publishPhoto = (pageId, publishedOrUnpublished = POST_PUBLISHED, url, text, scheduledPublishTime, pageAccessToken, callback) => {
+  const parameters = {
+    url: { string: url },
+  };
+
+  if (text) {
+    parameters.caption = { string: text };
+  }
+
+  if (publishedOrUnpublished !== POST_PUBLISHED) {
+    parameters.published = { string: 'false' };
+  }
+
+  if (publishedOrUnpublished === POST_SCHEDULE) {
+    parameters.scheduled_publish_time = { string: Math.round(scheduledPublishTime.getTime() / 1000).toString() };
+  }
+
+  const infoRequest = new GraphRequest(
+    `/${pageId}/photos`,
+    {
+      parameters,
+      httpMethod: 'POST',
+      accessToken: pageAccessToken,
+    },
+    (error, result) => callback(error, result),
+  );
+
+  new GraphRequestManager().addRequest(infoRequest).start();
 };
