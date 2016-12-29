@@ -9,12 +9,13 @@ import {
 
 import { Actions } from 'react-native-router-flux';
 import { CheckBox, FormInput } from 'react-native-elements';
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
 
 import ProfilePicture from './components/profile-picture';
+
+import * as Facebook from './utils/facebook';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,30 +35,11 @@ export default class Publish extends Component {
   }
 
   onRequest() {
-    let parameters;
     if (this.state.checked) {
-      parameters = {
-        message: { string: this.state.text },
-        published: { string: 'false' },
-        scheduled_publish_time: { string: Math.round(this.state.date.getTime() / 1000).toString() },
-      };
+      Facebook.publish(this.props.pageId, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
     } else {
-      parameters = {
-        message: { string: this.state.text },
-      };
+      Facebook.publish(this.props.pageId, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
     }
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/feed`,
-      {
-        parameters,
-        httpMethod: 'POST',
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this.responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
   }
 
   responseInfoCallback(error, result) {

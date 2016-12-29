@@ -7,10 +7,11 @@ import {
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { Button, List, ListItem } from 'react-native-elements';
 import NavigationBar from 'react-native-navbar';
 import CacheStore from 'react-native-cache-store';
+
+import * as Facebook from './utils/facebook';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,14 +36,7 @@ export default class Main extends Component {
 
   onRequest() {
     this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      '/me/accounts',
-      null,
-      (error, result) => this.responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
+    Facebook.accounts((error, result) => this.responseInfoCallback(error, result));
   }
 
   responseInfoCallback(error, result) {
@@ -87,6 +81,7 @@ export default class Main extends Component {
                 <ListItem
                   roundAvatar
                   key={i}
+                  avatar={item.picture && item.picture.data && item.picture.data.url}
                   title={item.name}
                   subtitle={item.category}
                   onPress={() => Actions.summary({
@@ -94,6 +89,8 @@ export default class Main extends Component {
                     pageName: item.name,
                     pageCategory: item.category,
                     pageAccessToken: item.access_token,
+                    pageCover: item.picture && item.picture.data && item.picture.data.url,
+                    pagePicture: item.cover && item.cover.source,
                   })}
                 />
               ))

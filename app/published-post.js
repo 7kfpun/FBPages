@@ -12,10 +12,8 @@ import {
 } from 'react-native';
 
 import Moment from 'moment';
-import Parse from 'url-parse';
 
 import { Actions } from 'react-native-router-flux';
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
@@ -23,6 +21,8 @@ import ParsedText from 'react-native-parsed-text';
 import Cover from './components/cover';
 import Insight from './components/insight';
 import ProfilePicture from './components/profile-picture';
+
+import * as Facebook from './utils/facebook';
 
 const window = Dimensions.get('window');
 
@@ -56,38 +56,27 @@ export default class publishedPost extends Component {
 
   onRequest() {
     this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/feed`,
-      {
-        parameters: {
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type' },
-          limit: { string: '5' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this.responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
+    Facebook.feed(this.props.pageId, Facebook.FEED_PUBLISHED, 4, null, (error, result) => this.responseInfoCallback(error, result));
   }
 
   onPagingRequest() {
-    if (this.state.nextUntil) {
-      const infoRequest = new GraphRequest(
-        `/${this.props.pageId}/feed`,
-        {
-          parameters: {
-            fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,privacy,place,properties,shares,source,to,type' },
-            limit: { string: '5' },
-            until: { string: `${parseInt(this.state.nextUntil) - 2}` },
-          },
-          accessToken: this.props.pageAccessToken,
-        },
-        (error, result) => this.responsePagingInfoCallback(error, result),
-      );
+    if (this.state.pagingNext) {
+      fetch(this.state.pagingNext).then(res => res.json())
+        .then((result) => {
+          console.log('pagingNext', result);
+          const newPosts = this.state.posts.concat(result.data);
 
-      new GraphRequestManager().addRequest(infoRequest).start();
+          this.setState({
+            dataSource: this.dataSource.cloneWithRows(newPosts),
+            posts: newPosts,
+          });
+
+          if (result.paging && result.paging.next) {
+            this.setState({
+              pagingNext: result.paging.next,
+            });
+          }
+        });
     }
   }
 
@@ -102,37 +91,10 @@ export default class publishedPost extends Component {
         refreshing: false,
       });
 
-      if (result.paging) {
-        const url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-        }
-      }
-    }
-  }
-
-  responsePagingInfoCallback(error, result) {
-    if (error) {
-      console.log('Error fetching feed:', error);
-    } else {
-      console.log('Success fetching feed:', result);
-      const newPosts = this.state.posts.concat(result.data);
-
-      this.setState({
-        dataSource: this.dataSource.cloneWithRows(newPosts),
-        posts: newPosts,
-      });
-
-      if (result.paging) {
-        const url = Parse(result.paging.next, true);
-        if (url.query.until) {
-          this.setState({
-            nextUntil: url.query.until,
-          });
-          // alert(url.query.until);
-        }
+      if (result.paging && result.paging.next) {
+        this.setState({
+          pagingNext: result.paging.next,
+        });
       }
     }
   }

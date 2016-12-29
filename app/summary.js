@@ -8,10 +8,11 @@ import {
 
 import { Actions } from 'react-native-router-flux';
 import { List, ListItem } from 'react-native-elements';
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import NavigationBar from 'react-native-navbar';
 
 import Cover from './components/cover';
+
+import * as Facebook from './utils/facebook';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,52 +42,26 @@ export default class Summary extends Component {
 
   onPublishedRequest() {
     this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/feed`,
-      {
-        parameters: {
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type' },
-          limit: { string: '100' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this.responsePublishedInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
+    Facebook.feed(this.props.pageId, Facebook.FEED_PUBLISHED, 100, null, (error, result) => this.responsePublishedInfoCallback(error, result));
   }
 
   onUnpublishedRequest() {
     this.setState({ refreshing: true });
-
-    const infoRequest = new GraphRequest(
-      `/${this.props.pageId}/promotable_posts`,
-      {
-        parameters: {
-          is_published: { string: 'false' },
-          fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
-          limit: { string: '100' },
-        },
-      },
-      (error, result) => this.responseUnpublishedInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
+    Facebook.feed(this.props.pageId, Facebook.FEED_UNPUBLISHED, 100, this.props.pageAccessToken, (error, result) => this.responseUnpublishedInfoCallback(error, result));
   }
 
   responsePublishedInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error);
+      console.log('Error fetching feed:', error);
     } else {
-      console.log('Success fetching data:', result);
-      if (result.data.length === 100) {
+      console.log('Success fetching feed:', result);
+      if (result.data && result.data.length === 100) {
         this.setState({
           publishedPostsLength: '100+',
         });
       } else {
         this.setState({
-          publishedPostsLength: result.data.length,
+          publishedPostsLength: (result.data && result.data.length) || 0,
           refreshing: false,
         });
       }
@@ -95,16 +70,16 @@ export default class Summary extends Component {
 
   responseUnpublishedInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error);
+      console.log('Error fetching feed:', error);
     } else {
-      console.log('Success fetching data:', result);
-      if (result.data.length === 100) {
+      console.log('Success fetching feed:', result);
+      if (result.data && result.data.length === 100) {
         this.setState({
           unpublishedPostsLength: '100+',
         });
       } else {
         this.setState({
-          unpublishedPostsLength: result.data.length,
+          unpublishedPostsLength: (result.data && result.data.length) || 0,
           refreshing: false,
         });
       }

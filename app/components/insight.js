@@ -6,8 +6,9 @@ import {
   View,
 } from 'react-native';
 
-import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import Spinner from 'react-native-spinkit';
+
+import * as Facebook from '../utils/facebook';
 
 const window = Dimensions.get('window');
 
@@ -32,18 +33,7 @@ export default class Insight extends Component {
   }
 
   onRefresh() {
-    const infoRequest = new GraphRequest(
-      `/${this.props.postId}/insights/post_impressions_unique`,
-      {
-        parameters: {
-          fields: { string: 'values' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this.responseInfoCallback(error, result),
-    );
-
-    new GraphRequestManager().addRequest(infoRequest).start();
+    Facebook.insights(this.props.postId, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
   }
 
   responseInfoCallback(error, result) {
@@ -71,8 +61,8 @@ export default class Insight extends Component {
       return (<View>
         <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * (this.state.postImpressions / 5000) : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
-          <View style={{ height: 6, width: this.state.postImpressions < 5000 ? blockWidth * ((1 - this.state.postImpressions) / 5000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
+          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * ((1 - this.state.postImpressions) / 3000) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
         </View>
       </View>);
     }
