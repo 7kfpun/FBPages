@@ -19,7 +19,7 @@ const scenes = Actions.create(
     <Scene key="summary" title={'Summary'} component={Summary} hideNavBar={true} />
     <Scene key="publish" title={'Publish'} component={Publish} hideNavBar={true} direction="vertical" />
     <Scene key="publishedPost" title={'Published Posts'} component={PublishedPost} hideNavBar={true} />
-    <Scene key="unpublishedPost" title={'Scheduled Posts'} component={UnpublishedPost} hideNavBar={true} />
+    <Scene key="unpublishedPost" title={'Unpublished/Scheduled Posts'} component={UnpublishedPost} hideNavBar={true} />
   </Scene>,
 );
 

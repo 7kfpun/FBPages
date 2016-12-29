@@ -43,13 +43,20 @@ export const feed = (pageId, postsToShow = FEED_PUBLISHED, limit = 100, pageAcce
   );
 };
 
-export const publish = (pageId, text, scheduledPublishTime, pageAccessToken, callback) => {
+export const POST_PUBLISHED = 'published';
+export const POST_UNPUBLISHED = 'unpublished';
+export const POST_SCHEDULE = 'schedule';
+
+export const publish = (pageId, publishedOrUnpublished, text, scheduledPublishTime, pageAccessToken, callback) => {
   const parameters = {
     message: { string: text },
   };
 
-  if (scheduledPublishTime) {
+  if (publishedOrUnpublished !== POST_PUBLISHED) {
     parameters.published = { string: 'false' };
+  }
+
+  if (publishedOrUnpublished === POST_SCHEDULE) {
     parameters.scheduled_publish_time = { string: Math.round(scheduledPublishTime.getTime() / 1000).toString() };
   }
 

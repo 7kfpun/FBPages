@@ -147,7 +147,7 @@ export default class Summary extends Component {
               badge={{ value: this.state.publishedPostsLength, badgeTextStyle: { color: 'white' } }}
             />
             <ListItem
-              title={'Scheduled Posts'}
+              title={'Unpublished / Scheduled Posts'}
               leftIcon={{ name: 'schedule' }}
               onPress={() => Actions.unpublishedPost({
                 pageId: this.props.pageId,

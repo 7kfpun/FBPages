@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 
 import { Actions } from 'react-native-router-flux';
-import { CheckBox, FormInput } from 'react-native-elements';
+import { FormInput } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import NavigationBar from 'react-native-navbar';
+import { SegmentedControls } from 'react-native-radio-buttons';
 
 import ProfilePicture from './components/profile-picture';
 
@@ -31,14 +32,17 @@ export default class Publish extends Component {
       date: new Date(),
       timeZoneOffsetInHours: (-1) * ((new Date()).getTimezoneOffset() / 60),
       checked: false,
+      selectedOption: 'Post now',
     };
   }
 
   onRequest() {
-    if (this.state.checked) {
-      Facebook.publish(this.props.pageId, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
-    } else {
-      Facebook.publish(this.props.pageId, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    if (this.state.selectedOption === 'Post now') {
+      Facebook.publish(this.props.pageId, Facebook.POST_PUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    } else if (this.state.selectedOption === 'Post later') {
+      Facebook.publish(this.props.pageId, Facebook.POST_UNPUBLISHED, this.state.text, null, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    } else if (this.state.selectedOption === 'Schedule') {
+      Facebook.publish(this.props.pageId, Facebook.POST_SCHEDULE, this.state.text, this.state.date, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
     }
   }
 
@@ -102,22 +106,19 @@ export default class Publish extends Component {
         </View>
 
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <CheckBox
-            center
-            title={'Post Later?'}
-            checkedIcon={'dot-circle-o'}
-            checkedColor={'gray'}
-            uncheckedIcon={'circle-o'}
-            checked={this.state.checked}
-            onPress={() => this.setState({ checked: !this.state.checked })}
+          <SegmentedControls
+            containerStyle={{ margin: 10 }}
+            options={['Post now', 'Post later', 'Schedule']}
+            onSelection={selectedOption => this.setState({ selectedOption })}
+            selectedOption={this.state.selectedOption}
           />
-          {this.state.checked && <DatePickerIOS
+
+          {this.state.selectedOption === 'Schedule' && <DatePickerIOS
             date={this.state.date}
             mode="datetime"
             timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
             onDateChange={date => this.setState({ date })}
           />}
-
           <KeyboardSpacer />
         </View>
       </View>
