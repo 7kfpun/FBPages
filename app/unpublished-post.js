@@ -175,7 +175,7 @@ export default class UnpublishedPost extends Component {
           renderRow={item => <View style={{ marginBottom: 5, backgroundColor: 'white' }}>
             <View style={{ padding: 15 }}>
               <View style={{ flexDirection: 'row' }}>
-                <ProfilePicture userId={item.from && item.from.id} />
+                <ProfilePicture pageId={item.from && item.from.id} />
                 <View style={{ flexDirection: 'column', marginLeft: 8 }}>
                   <Text style={{ fontWeight: '400', marginBottom: 3 }}>
                     {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}

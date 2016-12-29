@@ -100,7 +100,7 @@ export default class Publish extends Component {
         />
 
         <View style={{ margin: 15, flexDirection: 'row' }}>
-          <ProfilePicture userId={this.props.pageId} />
+          <ProfilePicture pageId={this.props.pageId} />
           <View style={{ flexDirection: 'column', marginLeft: 8 }}>
             <Text style={{ fontWeight: '400', marginBottom: 3 }}>
               {this.props.pageName}

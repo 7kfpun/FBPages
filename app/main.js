@@ -10,6 +10,7 @@ import { Actions } from 'react-native-router-flux';
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { Button, List, ListItem } from 'react-native-elements';
 import NavigationBar from 'react-native-navbar';
+import CacheStore from 'react-native-cache-store';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +30,7 @@ export default class Main extends Component {
 
   componentDidMount() {
     this.onRequest();
+    CacheStore.flush();
   }
 
   onRequest() {
@@ -86,6 +88,7 @@ export default class Main extends Component {
                   roundAvatar
                   key={i}
                   title={item.name}
+                  subtitle={item.category}
                   onPress={() => Actions.summary({
                     pageId: item.id,
                     pageName: item.name,

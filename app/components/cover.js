@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import CacheStore from 'react-native-cache-store';
 
 import ProfilePicture from './profile-picture';
 
@@ -68,18 +69,26 @@ export default class Cover extends Component {
   }
 
   onRequest() {
-    const infoRequest = new GraphRequest(
-      this.props.pageId,
-      {
-        parameters: {
-          fields: { string: 'cover' },
-        },
-        accessToken: this.props.pageAccessToken,
-      },
-      (error, result) => this.responseInfoCallback(error, result),
-    );
+    CacheStore.get(`cover-${this.props.pageId}`).then((value) => {
+      if (value) {
+        this.setState({
+          url: value,
+        });
+      } else {
+        const infoRequest = new GraphRequest(
+          this.props.pageId,
+          {
+            parameters: {
+              fields: { string: 'cover' },
+            },
+            accessToken: this.props.pageAccessToken,
+          },
+          (error, result) => this.responseInfoCallback(error, result),
+        );
 
-    new GraphRequestManager().addRequest(infoRequest).start();
+        new GraphRequestManager().addRequest(infoRequest).start();
+      }
+    });
   }
 
   responseInfoCallback(error, result) {
@@ -89,8 +98,9 @@ export default class Cover extends Component {
       console.log('Success fetching data cover:', result);
       if (result.cover && result.cover.source) {
         this.setState({
-          url: result.cover && result.cover.source,
+          url: result.cover.source,
         });
+        CacheStore.set(`cover-${this.props.pageId}`, result.cover.source, 2);  // in min
       }
     }
   }
@@ -103,7 +113,7 @@ export default class Cover extends Component {
       >
         <View style={styles.body}>
           <View style={{ flexDirection: 'row' }}>
-            <ProfilePicture userId={this.props.pageId} width={70} />
+            <ProfilePicture pageId={this.props.pageId} width={70} />
             <View style={styles.textBlock}>
               <Text style={styles.headlineText}>{this.props.pageName}</Text>
               <Text style={styles.text}>{this.props.pageCategory}</Text>
