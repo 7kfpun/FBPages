@@ -147,6 +147,8 @@ export default class Summary extends Component {
                 pageName: this.props.pageName,
                 pageCategory: this.props.pageCategory,
                 pageAccessToken: this.props.pageAccessToken,
+                pageCover: this.props.pageCover,
+                pagePicture: this.props.pagePicture,
               })}
               badge={{ value: this.state.publishedPostsLength, badgeTextStyle: { color: 'white' } }}
             />
@@ -158,6 +160,8 @@ export default class Summary extends Component {
                 pageName: this.props.pageName,
                 pageCategory: this.props.pageCategory,
                 pageAccessToken: this.props.pageAccessToken,
+                pageCover: this.props.pageCover,
+                pagePicture: this.props.pagePicture,
               })}
               badge={{ value: this.state.unpublishedPostsLength, badgeTextStyle: { color: 'white' } }}
             />
@@ -174,4 +178,6 @@ Summary.propTypes = {
   pageName: React.PropTypes.string,
   pageCategory: React.PropTypes.string,
   pageAccessToken: React.PropTypes.string,
+  pageCover: React.PropTypes.string,
+  pagePicture: React.PropTypes.string,
 };

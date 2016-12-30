@@ -40,10 +40,8 @@ export default class Publish extends Component {
     super(props);
     this.state = {
       text: '',
-      textHeight: 0,
       date: new Date(),
       timeZoneOffsetInHours: (-1) * ((new Date()).getTimezoneOffset() / 60),
-      checked: false,
       selectedOption: 'Post now',
     };
   }
@@ -192,16 +190,12 @@ export default class Publish extends Component {
             multiline
             placeholder={'Write something...'}
             onChangeText={text => this.setState({ text })}
-            onContentSizeChange={(event) => {
-              this.setState({ textHeight: event.nativeEvent.contentSize.height });
-            }}
-            containerStyle={{ flex: 1, height: Math.max(35, this.state.textHeight) }}
           />
 
           <View style={{ flex: 5 }}>
             <View style={{ margin: 22, flexDirection: 'row', justifyContent: 'flex-end' }}>
               <TouchableHighlight underlayColor="white" onPress={() => this.imagePick()}>
-                <Icon name="camera-alt" size={24} color="gray" />
+                <Icon name="camera-alt" size={26} color="gray" />
               </TouchableHighlight>
             </View>
             {this.state.source && <TouchableHighlight underlayColor="white" onPress={() => this.setState({ source: null })}>

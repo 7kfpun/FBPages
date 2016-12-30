@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
   },
   likesCommentsText: {
     fontSize: 11,
-    margin: 5,
+    fontWeight: '300',
+    margin: 6,
   },
 });
 
@@ -177,8 +178,8 @@ export default class publishedPost extends Component {
                   <Text style={{ fontWeight: '400', marginBottom: 3 }}>
                     {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
                   </Text>
-                  {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
-                    {`Posted by ${item.admin_creator.name}`}
+                  {item.application && item.application.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                    {`Posted by ${item.application.name}`}
                   </Text>}
                   <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
                     {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
@@ -202,11 +203,7 @@ export default class publishedPost extends Component {
 
             {!(item.type === 'link' || item.type === 'video') && item.full_picture && <Image
               resizeMode={'contain'}
-              style={{
-                marginBottom: 10,
-                width: window.width,
-                height: 280,
-              }}
+              style={{ marginBottom: 10, width: window.width, height: 280 }}
               source={{ uri: item.full_picture }}
             />}
 
@@ -214,11 +211,7 @@ export default class publishedPost extends Component {
               <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
                 {item.full_picture && <Image
                   resizeMode={'contain'}
-                  style={{
-                    marginBottom: 10,
-                    width: window.width - 50,
-                    height: 200,
-                  }}
+                  style={{ marginBottom: 10, width: window.width - 50, height: 220 }}
                   source={{ uri: item.full_picture }}
                 />}
                 {item.name && <Text style={{ fontWeight: '400', marginBottom: 3 }}>

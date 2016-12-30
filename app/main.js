@@ -96,8 +96,8 @@ export default class Main extends Component {
                     pageName: item.name,
                     pageCategory: item.category,
                     pageAccessToken: item.access_token,
-                    pageCover: item.picture && item.picture.data && item.picture.data.url,
-                    pagePicture: item.cover && item.cover.source,
+                    pageCover: item.cover && item.cover.source,
+                    pagePicture: item.picture && item.picture.data && item.picture.data.url,
                   })}
                 />
               ))

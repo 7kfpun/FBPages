@@ -165,8 +165,8 @@ export default class UnpublishedPost extends Component {
                   <Text style={{ fontWeight: '400', marginBottom: 3 }}>
                     {item.from && item.from.name}{item.to && item.to.data && ` > ${item.to.data[0].name}`}
                   </Text>
-                  {item.admin_creator && item.admin_creator.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
-                    {`Posted by ${item.admin_creator.name}`}
+                  {item.application && item.application.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
+                    {`Posted by ${item.application.name}`}
                   </Text>}
                   <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
                     {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
