@@ -60,7 +60,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>{human-readable reason for photo access}</string>
+	<string>Permission to access Photo Library is needed</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Permission to access Camera is needed</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
