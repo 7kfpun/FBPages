@@ -6,8 +6,6 @@ import {
   View,
 } from 'react-native';
 
-import Spinner from 'react-native-spinkit';
-
 import * as Facebook from '../utils/facebook';
 
 const window = Dimensions.get('window');
@@ -67,7 +65,7 @@ export default class Insight extends Component {
       </View>);
     }
 
-    return <Spinner style={styles.spinner} isVisible={true} size={20} type={'Wave'} color={'gray'} />;
+    return null;
   }
 }
 

@@ -40,6 +40,7 @@ export default class Publish extends Component {
     super(props);
     this.state = {
       text: '',
+      textHeight: 0,
       date: new Date(),
       timeZoneOffsetInHours: (-1) * ((new Date()).getTimezoneOffset() / 60),
       checked: false,
@@ -174,49 +175,61 @@ export default class Publish extends Component {
           }}
         />
 
-        <View style={{ flex: 1, alignItems: 'flex-start', margin: 15, flexDirection: 'row' }}>
-          <ProfilePicture pageId={this.props.pageId} />
-          <View style={{ flexDirection: 'column', marginLeft: 8 }}>
-            <Text style={{ fontWeight: '400', marginBottom: 3 }}>
-              {this.props.pageName}
-            </Text>
-            <Text style={{ color: 'gray', marginBottom: 3 }}>
-              <Icon name="public" size={11} color="gray" /> Public
-            </Text>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, alignItems: 'flex-start', margin: 15, flexDirection: 'row' }}>
+            <ProfilePicture pageId={this.props.pageId} />
+            <View style={{ flexDirection: 'column', marginLeft: 8 }}>
+              <Text style={{ fontWeight: '400', marginBottom: 3 }}>
+                {this.props.pageName}
+              </Text>
+              <Text style={{ color: 'gray', marginBottom: 3 }}>
+                <Icon name="public" size={11} color="gray" /> Public
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={{ flex: 6 }}>
-          <FormInput onChangeText={text => this.setState({ text })} multiline numberOfLines={4} placeholder={'Write something...'} />
-
-          <View style={{ margin: 22, flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <Icon name="camera-alt" size={20} color="gray" onPress={() => this.imagePick()} />
-          </View>
-          {this.state.source && <TouchableHighlight underlayColor="white" onPress={() => this.setState({ source: null })}>
-            <Image
-              resizeMode={'contain'}
-              style={{ justifyContent: 'center', alignItems: 'center', width: window.width, height: window.width * (2 / 3) }}
-              source={this.state.source}
-            >
-              <Icon name="highlight-off" size={60} color="white" style={{ backgroundColor: 'rgba(0,0,0,0)' }} />
-            </Image>
-          </TouchableHighlight>}
-        </View>
-
-        <View style={{ flex: 6, justifyContent: 'flex-end', backgroundColor: this.state.selectedOption === 'Schedule' ? 'white' : 'rgba(0,0,0,0)' }}>
-          <SegmentedControls
-            containerStyle={{ margin: 10 }}
-            options={['Post now', 'Post later', 'Schedule']}
-            onSelection={selectedOption => this.setState({ selectedOption })}
-            selectedOption={this.state.selectedOption}
+          <FormInput
+            multiline
+            placeholder={'Write something...'}
+            onChangeText={text => this.setState({ text })}
+            onContentSizeChange={(event) => {
+              this.setState({ textHeight: event.nativeEvent.contentSize.height });
+            }}
+            containerStyle={{ flex: 1, height: Math.max(35, this.state.textHeight) }}
           />
 
-          {this.state.selectedOption === 'Schedule' && <DatePickerIOS
-            date={this.state.date}
-            mode="datetime"
-            timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-            onDateChange={date => this.setState({ date })}
-          />}
+          <View style={{ flex: 5 }}>
+            <View style={{ margin: 22, flexDirection: 'row', justifyContent: 'flex-end' }}>
+              <TouchableHighlight underlayColor="white" onPress={() => this.imagePick()}>
+                <Icon name="camera-alt" size={24} color="gray" />
+              </TouchableHighlight>
+            </View>
+            {this.state.source && <TouchableHighlight underlayColor="white" onPress={() => this.setState({ source: null })}>
+              <Image
+                resizeMode={'contain'}
+                style={{ justifyContent: 'center', alignItems: 'center', width: window.width, height: window.width * (2 / 3) }}
+                source={this.state.source}
+              >
+                <Icon name="highlight-off" size={60} color="white" style={{ backgroundColor: 'rgba(0,0,0,0)' }} />
+              </Image>
+            </TouchableHighlight>}
+          </View>
+
+          <View style={{ flex: 6, justifyContent: 'flex-end', backgroundColor: this.state.selectedOption === 'Schedule' ? 'white' : 'rgba(0,0,0,0)' }}>
+            <SegmentedControls
+              containerStyle={{ margin: 10 }}
+              options={['Post now', 'Post later', 'Schedule']}
+              onSelection={selectedOption => this.setState({ selectedOption })}
+              selectedOption={this.state.selectedOption}
+            />
+
+            {this.state.selectedOption === 'Schedule' && <DatePickerIOS
+              date={this.state.date}
+              mode="datetime"
+              timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
+              onDateChange={date => this.setState({ date })}
+            />}
+          </View>
         </View>
         <KeyboardSpacer />
       </View>

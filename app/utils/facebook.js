@@ -23,7 +23,8 @@ export const FEED_ALL = 'all';
 export const feed = (pageId, postsToShow = FEED_PUBLISHED, limit = 100, pageAccessToken, callback) => {
   let path = `/${pageId}`;
   const parameters = {
-    fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
+    // fields: { string: 'id,admin_creator,application,caption,created_time,description,from,icon,is_hidden,link,message,message_tags,name,object_id,full_picture,place,properties,shares,source,to,type,scheduled_publish_time' },
+    fields: { string: 'id,admin_creator,comments.limit(1).summary(true),application,caption,created_time,description,from,likes.limit(1).summary(true),link,message,name,full_picture,place,shares,source,to,type,scheduled_publish_time' },
     limit: { string: limit.toString() },
   };
   if (postsToShow === FEED_PUBLISHED) {

@@ -22,7 +22,6 @@
     "react-native-radio-buttons": "^0.13.0",
     "react-native-root-toast": "^1.0.3",
     "react-native-router-flux": "^3.37.0",
-    "react-native-spinkit": "^0.1.5",
     "react-native-vector-icons": "^3.0.0"
   },
   "devDependencies": {

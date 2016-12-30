@@ -37,6 +37,14 @@ const styles = StyleSheet.create({
     color: '#1565C0',
     textDecorationLine: 'underline',
   },
+  likesCommentsBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  likesCommentsText: {
+    fontSize: 11,
+    margin: 5,
+  },
 });
 
 export default class publishedPost extends Component {
@@ -202,7 +210,7 @@ export default class publishedPost extends Component {
               source={{ uri: item.full_picture }}
             />}
 
-            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => Linking.openURL(item.link)}>
+            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => Linking.openURL(item.source || item.link)}>
               <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
                 {item.full_picture && <Image
                   resizeMode={'contain'}
@@ -226,6 +234,10 @@ export default class publishedPost extends Component {
             </TouchableHighlight>}
 
             <View style={{ padding: 15 }}>
+              <View style={styles.likesCommentsBlock}>
+                <Icon name="thumb-up" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.likes && item.likes.summary && item.likes.summary.total_count}</Text>
+                <Icon name="comment" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.comments && item.comments.summary && item.comments.summary.total_count}</Text>
+              </View>
               <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
             </View>
           </View>}
