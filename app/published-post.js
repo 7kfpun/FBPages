@@ -33,6 +33,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  navigatorRightButton: {
+    paddingTop: 10,
+    paddingLeft: 50,
+    paddingRight: 10,
+  },
   url: {
     color: '#1565C0',
     textDecorationLine: 'underline',
@@ -118,9 +123,9 @@ export default class publishedPost extends Component {
 
   responseDeleteInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching feed:', error);
+      console.log('Error deleting post:', error);
     } else {
-      console.log('Success fetching feed:', result);
+      console.log('Success deleting post:', result);
       Toast.show('Deleted successfully');
       this.onRequest();
     }
@@ -143,15 +148,16 @@ export default class publishedPost extends Component {
             title: 'Back',
             handler: Actions.pop,
           }}
-          rightButton={{
-            title: 'Publish',
-            handler: () => Actions.publish({
+          rightButton={<TouchableHighlight
+            style={styles.navigatorRightButton}
+            underlayColor="white"
+            onPress={() => Actions.publish({
               pageId: this.props.pageId,
               pageName: this.props.pageName,
               pageCategory: this.props.pageCategory,
               pageAccessToken: this.props.pageAccessToken,
-            }),
-          }}
+            })}
+          ><Icon name="edit" size={26} color="#1787FB" /></TouchableHighlight>}
         />
 
         <ListView
@@ -230,6 +236,7 @@ export default class publishedPost extends Component {
               <View style={styles.likesCommentsBlock}>
                 <Icon name="thumb-up" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.likes && item.likes.summary && item.likes.summary.total_count}</Text>
                 <Icon name="comment" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.comments && item.comments.summary && item.comments.summary.total_count}</Text>
+                <Icon name="share" size={11} color="gray" /><Text style={styles.likesCommentsText}>{(item.shares && item.shares.count) || 0}</Text>
               </View>
               <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
             </View>

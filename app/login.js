@@ -17,13 +17,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textBlock: {
-    flex: 4,
+    flex: 6,
     margin: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loginButton: {
-    flex: 2,
+    flex: 3,
     alignItems: 'center',
   },
   informationBlock: {
@@ -111,6 +111,9 @@ export default class Login extends Component {
           {!this.state.isLogged && <View style={styles.informationBlock}>
             <Text style={styles.informationText}>Login to manage your Facebook pages</Text>
           </View>}
+          <View style={styles.informationBlock}>
+            <Text style={styles.informationText}>{'Made with <3 by KF'}</Text>
+          </View>
         </View>
       </View>
     );

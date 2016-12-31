@@ -27,10 +27,10 @@ export default class Insight extends Component {
   }
 
   componentDidMount() {
-    this.onRefresh();
+    this.onRequest();
   }
 
-  onRefresh() {
+  onRequest() {
     Facebook.insights(this.props.postId, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
   }
 

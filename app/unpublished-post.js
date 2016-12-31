@@ -6,6 +6,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
 
@@ -29,6 +30,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+  },
+  navigatorRightButton: {
+    paddingTop: 10,
+    paddingLeft: 50,
+    paddingRight: 10,
   },
   url: {
     color: '#1565C0',
@@ -130,15 +136,16 @@ export default class UnpublishedPost extends Component {
             title: 'Back',
             handler: Actions.pop,
           }}
-          rightButton={{
-            title: 'Publish',
-            handler: () => Actions.publish({
+          rightButton={<TouchableHighlight
+            style={styles.navigatorRightButton}
+            underlayColor="white"
+            onPress={() => Actions.publish({
               pageId: this.props.pageId,
               pageName: this.props.pageName,
               pageCategory: this.props.pageCategory,
               pageAccessToken: this.props.pageAccessToken,
-            }),
-          }}
+            })}
+          ><Icon name="edit" size={26} color="#1787FB" /></TouchableHighlight>}
         />
 
         <ListView

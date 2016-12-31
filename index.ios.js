@@ -12,6 +12,8 @@ import Publish from './app/publish';
 import PublishedPost from './app/published-post';
 import UnpublishedPost from './app/unpublished-post';
 
+console.ignoredYellowBox = [];
+
 const scenes = Actions.create(
   <Scene key="root">
     <Scene key="main" title={'Pages⚑⚑'} component={Main} hideNavBar={true} initial={true} />

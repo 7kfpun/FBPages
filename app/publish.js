@@ -101,12 +101,12 @@ export default class Publish extends Component {
 
   responseInfoCallback(error, result) {
     if (error) {
-      console.log('Error fetching data:', error, error.message);
+      console.log('Error publishing post:', error, error.message);
       if (error && error.message) {
         alert(error.message);
       }
     } else {
-      console.log('Success fetching data:', result);
+      console.log('Success publishing post:', result);
       Actions.pop();
       Actions.refresh({ addNew: true });
       Toast.show('Posted successfully');
