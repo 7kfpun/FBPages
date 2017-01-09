@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   ListView,
+  Modal,
   RefreshControl,
   StyleSheet,
   Text,
@@ -36,6 +37,17 @@ const styles = StyleSheet.create({
     paddingLeft: 50,
     paddingRight: 10,
   },
+  fullPreview: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullImage: {
+    width: window.width,
+    height: window.height,
+    resizeMode: 'contain',
+  },
   url: {
     color: '#1565C0',
     textDecorationLine: 'underline',
@@ -52,6 +64,8 @@ export default class UnpublishedPosts extends Component {
       posts: [],
       dataSource: this.dataSource.cloneWithRows([]),
       nextUntil: null,
+      isModalVisible: false,
+      selectedImage: null,
     };
   }
 
@@ -89,6 +103,10 @@ export default class UnpublishedPosts extends Component {
           }
         });
     }
+  }
+
+  setModalVisible(visible) {
+    this.setState({ isModalVisible: visible });
   }
 
   responseInfoCallback(error, result) {
@@ -148,6 +166,24 @@ export default class UnpublishedPosts extends Component {
           ><Icon name="edit" size={26} color="#1787FB" /></TouchableHighlight>}
         />
 
+        {this.state.selectedImage && <Modal
+          animationType="fade"
+          transparent={true}
+          visible={this.state.isModalVisible}
+          onRequestClose={() => this.setModalVisible(false)}
+        >
+          <TouchableHighlight
+            style={styles.fullPreview}
+            onPress={() => this.setModalVisible(!this.state.isModalVisible)}
+            onPressIn={() => this.setModalVisible(!this.state.isModalVisible)}
+          >
+            <Image
+              style={styles.fullImage}
+              source={{ uri: this.state.selectedImage }}
+            />
+          </TouchableHighlight>
+        </Modal>}
+
         <ListView
           refreshControl={
             <RefreshControl
@@ -194,15 +230,23 @@ export default class UnpublishedPosts extends Component {
               </ParsedText>
             </View>
 
-            {item.full_picture && <Image
-              resizeMode={'contain'}
-              style={{
-                marginBottom: 10,
-                width: window.width,
-                height: 280,
+            {item.full_picture && <TouchableHighlight
+              onPress={() => {
+                this.setModalVisible(true);
+                this.setState({ selectedImage: item.full_picture });
               }}
-              source={{ uri: item.full_picture }}
-            />}
+              underlayColor="white"
+            >
+              <Image
+                resizeMode={'contain'}
+                style={{
+                  marginBottom: 10,
+                  width: window.width,
+                  height: 280,
+                }}
+                source={{ uri: item.full_picture }}
+              />
+            </TouchableHighlight>}
           </View>}
         />
       </View>
