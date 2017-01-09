@@ -89,7 +89,8 @@ export const deletePost = (postId, pageAccessToken, callback) => {
 
 export const insights = (postId, pageAccessToken, callback) => {
   graphRequest(
-    `/${postId}/insights/post_impressions_unique/lifetime`,
+    `/${postId}/insights/post_impressions/lifetime`,
+    // `/${postId}/insights/post_impressions_unique/lifetime`,
     { fields: { string: 'values' } },
     pageAccessToken,
     callback,
