@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>application-identifier</key>
-	<string>WGQZV6RHBM.org.reactjs.native.example.AppReview</string>
+	<string>CC4C8V8BXN.com.kfpun.facebook.appreview.fbpages</string>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>WGQZV6RHBM.org.reactjs.native.example.AppReview</string>
+		<string>CC4C8V8BXN.com.kfpun.facebook.appreview.fbpages</string>
 	</array>
 </dict>
 </plist>
