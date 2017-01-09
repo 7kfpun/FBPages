@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { FormInput } from 'react-native-elements';
 import { RNS3 } from 'react-native-aws3';
@@ -44,6 +45,30 @@ export default class Publish extends Component {
       timeZoneOffsetInHours: (-1) * ((new Date()).getTimezoneOffset() / 60),
       selectedOption: 'Post now',
     };
+  }
+
+  componentDidMount() {
+    AccessToken.getCurrentAccessToken().then(
+      (data) => {
+        console.log('getCurrentAccessToken', data);
+        if (!data.permissions || data.permissions.indexOf('publish_pages') === -1) {
+          LoginManager.logInWithPublishPermissions(['manage_pages', 'publish_pages']).then(
+            (result) => {
+              if (result.isCancelled) {
+                alert('Login cancelled. You cannot publish without manage_pages and publish_pages permissions.');
+                Actions.pop();
+              } else {
+
+              }
+            },
+            (error) => {
+              alert(`Login fail with error: ${error}`);
+              Actions.pop();
+            },
+          );
+        }
+      },
+    );
   }
 
   onRequest() {

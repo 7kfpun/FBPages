@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { List, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -32,8 +33,8 @@ export default class Summary extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      publishedPostsLength: 0,
-      unpublishedPostsLength: 0,
+      publishedPostsLength: '-',
+      unpublishedPostsLength: '-',
       refreshing: false,
     };
   }
@@ -163,14 +164,44 @@ export default class Summary extends Component {
             <ListItem
               title={'Unpublished / Scheduled Posts'}
               leftIcon={{ name: 'schedule' }}
-              onPress={() => Actions.unpublishedPosts({
-                pageId: this.props.pageId,
-                pageName: this.props.pageName,
-                pageCategory: this.props.pageCategory,
-                pageAccessToken: this.props.pageAccessToken,
-                pageCover: this.props.pageCover,
-                pagePicture: this.props.pagePicture,
-              })}
+              onPress={() => {
+                AccessToken.getCurrentAccessToken().then(
+                  (data) => {
+                    console.log('getCurrentAccessToken', data);
+                    if (!data.permissions || data.permissions.indexOf('publish_pages') === -1) {
+                      LoginManager.logInWithPublishPermissions(['manage_pages', 'publish_pages']).then(
+                        (result) => {
+                          if (result.isCancelled) {
+                            alert('Login cancelled. You cannot check unpublished posts without manage_pages and publish_pages permissions.');
+                          } else {
+                            this.onUnpublishedRequest();
+                            Actions.unpublishedPosts({
+                              pageId: this.props.pageId,
+                              pageName: this.props.pageName,
+                              pageCategory: this.props.pageCategory,
+                              pageAccessToken: this.props.pageAccessToken,
+                              pageCover: this.props.pageCover,
+                              pagePicture: this.props.pagePicture,
+                            });
+                          }
+                        },
+                        (error) => {
+                          alert(`Login fail with error: ${error}`);
+                        },
+                      );
+                    } else if (data.permissions && data.permissions.indexOf('publish_pages') !== -1) {
+                      Actions.unpublishedPosts({
+                        pageId: this.props.pageId,
+                        pageName: this.props.pageName,
+                        pageCategory: this.props.pageCategory,
+                        pageAccessToken: this.props.pageAccessToken,
+                        pageCover: this.props.pageCover,
+                        pagePicture: this.props.pagePicture,
+                      });
+                    }
+                  },
+                );
+              }}
               badge={{ value: this.state.unpublishedPostsLength, badgeTextStyle: { color: 'white' } }}
             />
           </List>

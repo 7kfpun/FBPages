@@ -51,10 +51,9 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    console.log(AccessToken);
     AccessToken.getCurrentAccessToken().then(
       (data) => {
-        console.log(data);
+        console.log('getCurrentAccessToken', data);
         if (data.expirationTime && data.expirationTime > new Date().getTime()) {
           this.setState({ isLogged: true });
         }
@@ -83,7 +82,6 @@ export default class Login extends Component {
           <View style={styles.loginButton}>
             <LoginButton
               readPermissions={['pages_show_list', 'read_insights']}
-              publishPermissions={['manage_pages', 'publish_pages']}
               onLoginFinished={
                 (error, result) => {
                   if (error) {
@@ -93,7 +91,7 @@ export default class Login extends Component {
                   } else {
                     AccessToken.getCurrentAccessToken().then(
                       (data) => {
-                        console.log(data);
+                        console.log('getCurrentAccessToken', data);
                         Actions.pop();
                         Actions.refresh();
                       },
