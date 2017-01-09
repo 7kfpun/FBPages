@@ -9,10 +9,13 @@ import Main from './app/main';
 import Login from './app/login';
 import Summary from './app/summary';
 import Publish from './app/publish';
-import PublishedPost from './app/published-post';
-import UnpublishedPost from './app/unpublished-post';
+import PublishedPosts from './app/published-posts';
+import UnpublishedPosts from './app/unpublished-posts';
 
-console.ignoredYellowBox = [];
+console.ignoredYellowBox = [
+  'Possible Unhandled Promise Rejection',
+  'Warning: setState(...): Can only update a mounted or mounting component.',
+];
 
 const scenes = Actions.create(
   <Scene key="root">
@@ -20,8 +23,8 @@ const scenes = Actions.create(
     <Scene key="login" title={'Login'} component={Login} hideNavBar={true} direction="vertical" panHandlers={null} />
     <Scene key="summary" title={'Summary'} component={Summary} hideNavBar={true} />
     <Scene key="publish" title={'Publish'} component={Publish} hideNavBar={true} direction="vertical" />
-    <Scene key="publishedPost" title={'Published Posts'} component={PublishedPost} hideNavBar={true} />
-    <Scene key="unpublishedPost" title={'Unpublished / Scheduled Posts'} component={UnpublishedPost} hideNavBar={true} />
+    <Scene key="publishedPosts" title={'Published Posts'} component={PublishedPosts} hideNavBar={true} />
+    <Scene key="unpublishedPosts" title={'Unpublished / Scheduled Posts'} component={UnpublishedPosts} hideNavBar={true} />
   </Scene>,
 );
 

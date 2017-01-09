@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   ActionSheetIOS,
+  TouchableHighlight,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,10 +17,8 @@ export default class DeleteIcon extends Component {
   }
 
   render() {
-    return (<Icon
-      name="expand-more"
-      size={20}
-      color="gray"
+    return (<TouchableHighlight
+      underlayColor="white"
       onPress={() => {
         const BUTTONS = [
           'Delete',
@@ -39,7 +38,9 @@ export default class DeleteIcon extends Component {
           }
         });
       }}
-    />);
+    >
+      <Icon name="expand-more" size={24} color="gray" />
+    </TouchableHighlight>);
   }
 }
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   Dimensions,
   Image,
-  Linking,
   ListView,
   RefreshControl,
   StyleSheet,
@@ -21,7 +20,6 @@ import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
 import DeleteIcon from './components/delete-icon';
-import Insight from './components/insight';
 import ProfilePicture from './components/profile-picture';
 
 import * as Facebook from './utils/facebook';
@@ -42,18 +40,9 @@ const styles = StyleSheet.create({
     color: '#1565C0',
     textDecorationLine: 'underline',
   },
-  likesCommentsBlock: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  likesCommentsText: {
-    fontSize: 11,
-    fontWeight: '300',
-    margin: 6,
-  },
 });
 
-export default class publishedPost extends Component {
+export default class UnpublishedPosts extends Component {
   constructor(props) {
     super(props);
     this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
@@ -76,7 +65,7 @@ export default class publishedPost extends Component {
 
   onRequest() {
     this.setState({ refreshing: true });
-    Facebook.feed(this.props.pageId, Facebook.FEED_PUBLISHED, 10, null, (error, result) => this.responseInfoCallback(error, result));
+    Facebook.feed(this.props.pageId, Facebook.FEED_UNPUBLISHED, 10, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
   }
 
   onPagingRequest() {
@@ -123,23 +112,22 @@ export default class publishedPost extends Component {
 
   responseDeleteInfoCallback(error, result) {
     if (error) {
-      console.log('Error deleting post:', error);
+      console.log('Error fetching feed:', error);
     } else {
-      console.log('Success deleting post:', result);
+      console.log('Success fetching feed:', result);
       Toast.show('Deleted successfully');
       this.onRequest();
     }
-  }
-
-  handleUrlPress(url) {
-    Linking.openURL(url);
   }
 
   render() {
     return (
       <View style={styles.container}>
         <NavigationBar
-          title={{ title: this.props.title }}
+          title={{
+            title: this.props.title,
+            style: { fontSize: 14 },
+          }}
           style={{
             borderBottomWidth: StyleSheet.hairlineWidth * 2,
             borderBottomColor: '#E0E0E0',
@@ -188,7 +176,7 @@ export default class publishedPost extends Component {
                     {`Posted by ${item.application.name}`}
                   </Text>}
                   <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
-                    {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
+                    {item.scheduled_publish_time && `Will be published ${Moment(new Date(item.scheduled_publish_time * 1000)).fromNow()}`} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}
                   </Text>
                 </View>
                 <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -206,40 +194,15 @@ export default class publishedPost extends Component {
               </ParsedText>
             </View>
 
-
-            {!(item.type === 'link' || item.type === 'video') && item.full_picture && <Image
+            {item.full_picture && <Image
               resizeMode={'contain'}
-              style={{ marginBottom: 10, width: window.width, height: 280 }}
+              style={{
+                marginBottom: 10,
+                width: window.width,
+                height: 280,
+              }}
               source={{ uri: item.full_picture }}
             />}
-
-            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => Linking.openURL(item.source || item.link)}>
-              <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
-                {item.full_picture && <Image
-                  resizeMode={'contain'}
-                  style={{ marginBottom: 10, width: window.width - 50, height: 220 }}
-                  source={{ uri: item.full_picture }}
-                />}
-                {item.name && <Text style={{ fontWeight: '400', marginBottom: 3 }}>
-                  {item.name && item.name.slice(0, 40)}
-                </Text>}
-                {item.description && <Text style={{ fontWeight: '200', marginBottom: 3 }}>
-                  {item.description}
-                </Text>}
-                {item.caption && <Text style={{ fontWeight: '200', color: 'gray', marginBottom: 3 }}>
-                  {item.caption}
-                </Text>}
-              </View>
-            </TouchableHighlight>}
-
-            <View style={{ padding: 15 }}>
-              <View style={styles.likesCommentsBlock}>
-                <Icon name="thumb-up" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.likes && item.likes.summary && item.likes.summary.total_count}</Text>
-                <Icon name="comment" size={11} color="gray" /><Text style={styles.likesCommentsText}>{item.comments && item.comments.summary && item.comments.summary.total_count}</Text>
-                <Icon name="share" size={11} color="gray" /><Text style={styles.likesCommentsText}>{(item.shares && item.shares.count) || 0}</Text>
-              </View>
-              <Insight postId={item.id} pageName={this.props.pageName} pageAccessToken={this.props.pageAccessToken} />
-            </View>
           </View>}
         />
       </View>
@@ -247,7 +210,7 @@ export default class publishedPost extends Component {
   }
 }
 
-publishedPost.propTypes = {
+UnpublishedPosts.propTypes = {
   title: React.PropTypes.string,
   pageId: React.PropTypes.string,
   pageName: React.PropTypes.string,

@@ -150,7 +150,7 @@ export default class Summary extends Component {
             <ListItem
               title={'Published Posts'}
               leftIcon={{ name: 'description' }}
-              onPress={() => Actions.publishedPost({
+              onPress={() => Actions.publishedPosts({
                 pageId: this.props.pageId,
                 pageName: this.props.pageName,
                 pageCategory: this.props.pageCategory,
@@ -163,7 +163,7 @@ export default class Summary extends Component {
             <ListItem
               title={'Unpublished / Scheduled Posts'}
               leftIcon={{ name: 'schedule' }}
-              onPress={() => Actions.unpublishedPost({
+              onPress={() => Actions.unpublishedPosts({
                 pageId: this.props.pageId,
                 pageName: this.props.pageName,
                 pageCategory: this.props.pageCategory,
