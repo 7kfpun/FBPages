@@ -82,6 +82,7 @@ export default class Login extends Component {
           </View>}
           <View style={styles.loginButton}>
             <LoginButton
+              readPermissions={['pages_show_list', 'read_insights']}
               publishPermissions={['manage_pages', 'publish_pages']}
               onLoginFinished={
                 (error, result) => {
