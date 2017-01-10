@@ -58,7 +58,7 @@ export default class Publish extends Component {
                 alert('Login cancelled. You cannot publish without manage_pages and publish_pages permissions.');
                 Actions.pop();
               } else {
-
+                console.log('Success logged');
               }
             },
             (error) => {

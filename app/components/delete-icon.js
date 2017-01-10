@@ -4,6 +4,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Toast from 'react-native-root-toast';
 
@@ -34,7 +35,29 @@ export default class DeleteIcon extends Component {
         },
         (buttonIndex) => {
           if (buttonIndex === 0) {
-            this.onDelete();
+            AccessToken.getCurrentAccessToken().then(
+              (data) => {
+                console.log('getCurrentAccessToken', data);
+                if (!data.permissions || data.permissions.indexOf('publish_pages') === -1) {
+                  LoginManager.logInWithPublishPermissions(['manage_pages', 'publish_pages']).then(
+                    (result) => {
+                      if (result.isCancelled) {
+                        alert('Login cancelled. You cannot delete a post without manage_pages and publish_pages permissions.');
+                        Actions.pop();
+                      } else {
+                        this.onDelete();
+                      }
+                    },
+                    (error) => {
+                      alert(`Login fail with error: ${error}`);
+                      Actions.pop();
+                    },
+                  );
+                } else if (data.permissions && data.permissions.indexOf('publish_pages') !== -1) {
+                  this.onDelete();
+                }
+              },
+            );
           }
         });
       }}
