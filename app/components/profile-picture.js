@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 
 import { GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
-import CacheStore from 'react-native-cache-store';
 
 export default class ProfilePicture extends Component {
   constructor(props) {
@@ -20,29 +19,21 @@ export default class ProfilePicture extends Component {
   }
 
   onRequest() {
-    CacheStore.get(`profile-picture-${this.props.pageId}`).then((value) => {
-      if (value) {
-        this.setState({
-          url: value,
-        });
-      } else {
-        this.setState({
-          url: 'https://scontent.xx.fbcdn.net/v/t1.0-1/c15.0.50.50/p50x50/399548_10149999285987789_1102888142_n.png?oh=82d551fbd5c70ae9e2ad123aaebbc331&oe=58E6646A',
-        });
-        const infoRequest = new GraphRequest(
-          this.props.pageId,
-          {
-            parameters: {
-              fields: { string: 'picture.type(small)' },
-            },
-            accessToken: this.props.pageAccessToken,
-          },
-          (error, result) => this.responseInfoCallback(error, result),
-        );
-
-        new GraphRequestManager().addRequest(infoRequest).start();
-      }
+    this.setState({
+      url: 'https://scontent.xx.fbcdn.net/v/t1.0-1/c15.0.50.50/p50x50/399548_10149999285987789_1102888142_n.png?oh=82d551fbd5c70ae9e2ad123aaebbc331&oe=58E6646A',
     });
+    const infoRequest = new GraphRequest(
+      this.props.pageId,
+      {
+        parameters: {
+          fields: { string: 'picture.type(small)' },
+        },
+        accessToken: this.props.pageAccessToken,
+      },
+      (error, result) => this.responseInfoCallback(error, result),
+    );
+
+    new GraphRequestManager().addRequest(infoRequest).start();
   }
 
   responseInfoCallback(error, result) {
@@ -54,7 +45,6 @@ export default class ProfilePicture extends Component {
         this.setState({
           url: result.picture.data.url,
         });
-        CacheStore.set(`profile-picture-${this.props.pageId}`, result.picture.data.url, 2);  // in min
       }
     }
   }

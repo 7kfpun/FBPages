@@ -8,7 +8,6 @@ import {
 
 import { Actions } from 'react-native-router-flux';
 import { List, ListItem } from 'react-native-elements';
-import CacheStore from 'react-native-cache-store';
 import NavigationBar from 'react-native-navbar';
 
 import * as Facebook from './utils/facebook';
@@ -31,7 +30,6 @@ export default class Main extends Component {
 
   componentDidMount() {
     this.onRequest();
-    CacheStore.flush();
   }
 
   componentWillReceiveProps() {
