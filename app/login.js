@@ -85,9 +85,9 @@ export default class Login extends Component {
               onLoginFinished={
                 (error, result) => {
                   if (error) {
-                    alert(`login has error: ${result.error}`);
+                    alert(`Login has error: ${result.error}`);
                   } else if (result.isCancelled) {
-                    alert('login is cancelled.');
+                    alert('Login is cancelled.');
                   } else {
                     AccessToken.getCurrentAccessToken().then(
                       (data) => {

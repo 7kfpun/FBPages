@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Cover = (props) => {
+const Cover = function Cover(props) {
   return (
     <Image
       style={styles.container}

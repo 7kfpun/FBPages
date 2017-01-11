@@ -138,7 +138,7 @@ export default class Summary extends Component {
               pageCategory: this.props.pageCategory,
               pageAccessToken: this.props.pageAccessToken,
             })}
-          ><Icon name="edit" size={26} color="#1787FB" /></TouchableHighlight>}
+          ><Icon name="edit" size={24} color="#0076FF" /></TouchableHighlight>}
         />
 
         <ScrollView
