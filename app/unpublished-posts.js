@@ -17,6 +17,7 @@ import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
+import SafariView from 'react-native-safari-view';
 import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
@@ -140,6 +141,12 @@ export default class UnpublishedPosts extends Component {
       Toast.show('Deleted successfully');
       this.onRequest();
     }
+  }
+
+  handleUrlPress(url) {  // eslint-disable-line class-methods-use-this
+    SafariView.isAvailable()
+      .then(SafariView.show({ url }))
+      .catch(error => console.warn(error));
   }
 
   render() {

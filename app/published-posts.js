@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   Dimensions,
   Image,
-  Linking,
   ListView,
   Modal,
   RefreshControl,
@@ -18,6 +17,7 @@ import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationBar from 'react-native-navbar';
 import ParsedText from 'react-native-parsed-text';
+import SafariView from 'react-native-safari-view';
 import Toast from 'react-native-root-toast';
 
 import Cover from './components/cover';
@@ -153,8 +153,10 @@ export default class publishedPosts extends Component {
     }
   }
 
-  handleUrlPress(url) {
-    Linking.openURL(url);
+  handleUrlPress(url) {  // eslint-disable-line class-methods-use-this
+    SafariView.isAvailable()
+      .then(SafariView.show({ url }))
+      .catch(error => console.warn(error));
   }
 
   render() {
@@ -257,7 +259,7 @@ export default class publishedPosts extends Component {
               />
             </TouchableHighlight>}
 
-            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => Linking.openURL(item.source || item.link)}>
+            {(item.type === 'link' || item.type === 'video') && <TouchableHighlight underlayColor={'white'} onPress={() => this.handleUrlPress(item.source || item.link)}>
               <View style={{ margin: 10, padding: 15, borderWidth: 1, borderColor: '#EEEEEE' }}>
                 {item.full_picture && <Image
                   resizeMode={'contain'}
