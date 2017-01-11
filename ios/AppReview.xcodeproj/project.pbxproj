@@ -33,6 +33,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		849234B60DF349DCAC6711E7 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A8BF9EC5182144BB9EC7B699 /* Zocial.ttf */; };
 		8923EBA90740428D99F0796B /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0FF386D91F6A47D1A4A4F4CE /* EvilIcons.ttf */; };
+		9C95F5670808427C8506E0B9 /* libSafariViewManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7C085ECD4D94D919F61A261 /* libSafariViewManager.a */; };
 		AA6234851E10F1EF00EFA88D /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6234811E10F1EF00EFA88D /* Bolts.framework */; };
 		AA6234861E10F1EF00EFA88D /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6234821E10F1EF00EFA88D /* FBSDKCoreKit.framework */; };
 		AA6234871E10F1EF00EFA88D /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6234831E10F1EF00EFA88D /* FBSDKLoginKit.framework */; };
@@ -191,6 +192,13 @@
 			remoteGlobalIDString = 9350E0F11CE3B0920041D815;
 			remoteInfo = RCTFBSDK;
 		};
+		AA7413701E260F4100CC042B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B482B90892324A35B70955F0 /* SafariViewManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = SafariViewManager;
+		};
 		AAF08FD41E11007B00BA1919 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 45C3E382047F4DF39CA04441 /* RNVectorIcons.xcodeproj */;
@@ -255,6 +263,8 @@
 		AA6234831E10F1EF00EFA88D /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		AA6234841E10F1EF00EFA88D /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKShareKit.framework; sourceTree = "<group>"; };
 		AEB1F946BCDD49499D70B548 /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTImageResizer.xcodeproj; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; };
+		B482B90892324A35B70955F0 /* SafariViewManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SafariViewManager.xcodeproj; path = "../node_modules/react-native-safari-view/SafariViewManager.xcodeproj"; sourceTree = "<group>"; };
+		B7C085ECD4D94D919F61A261 /* libSafariViewManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSafariViewManager.a; sourceTree = "<group>"; };
 		F61E882C6D144221A208FD41 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		F728D98D794546B39B9006BD /* libRCTImageResizer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTImageResizer.a; sourceTree = "<group>"; };
 		FF3D07178575426593AAABDF /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
@@ -292,6 +302,7 @@
 				5CAFF4E2FA304ED989B9A1F8 /* libRNVectorIcons.a in Frameworks */,
 				09B435A7F5264021A286363F /* libRNImagePicker.a in Frameworks */,
 				D1781EC38D904284BDBEFBF3 /* libRCTImageResizer.a in Frameworks */,
+				9C95F5670808427C8506E0B9 /* libSafariViewManager.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +445,7 @@
 				45C3E382047F4DF39CA04441 /* RNVectorIcons.xcodeproj */,
 				239976C9EF56466FA06E9B90 /* RNImagePicker.xcodeproj */,
 				AEB1F946BCDD49499D70B548 /* RCTImageResizer.xcodeproj */,
+				B482B90892324A35B70955F0 /* SafariViewManager.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -487,6 +499,14 @@
 				AA6234841E10F1EF00EFA88D /* FBSDKShareKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA7413561E260F4000CC042B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA7413711E260F4100CC042B /* libSafariViewManager.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		AAF08FBD1E11007A00BA1919 /* Products */ = {
@@ -658,6 +678,10 @@
 					ProductGroup = AAF08FBD1E11007A00BA1919 /* Products */;
 					ProjectRef = 45C3E382047F4DF39CA04441 /* RNVectorIcons.xcodeproj */;
 				},
+				{
+					ProductGroup = AA7413561E260F4000CC042B /* Products */;
+					ProjectRef = B482B90892324A35B70955F0 /* SafariViewManager.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -808,6 +832,13 @@
 			remoteRef = AA62346E1E10F19800EFA88D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		AA7413711E260F4100CC042B /* libSafariViewManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSafariViewManager.a;
+			remoteRef = AA7413701E260F4100CC042B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		AAF08FD51E11007B00BA1919 /* libRNVectorIcons.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -928,7 +959,10 @@
 				INFOPLIST_FILE = AppReviewTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppReview.app/AppReview";
 			};
@@ -942,7 +976,10 @@
 				INFOPLIST_FILE = AppReviewTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppReview.app/AppReview";
 			};
@@ -1039,6 +1076,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-safari-view",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1083,6 +1121,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-safari-view",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

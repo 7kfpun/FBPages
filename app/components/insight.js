@@ -3,8 +3,11 @@ import {
   Dimensions,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
+
+import { Actions } from 'react-native-router-flux';
 
 import * as Facebook from '../utils/facebook';
 
@@ -46,7 +49,8 @@ export default class Insight extends Component {
   }
 
   onRequest() {
-    Facebook.insights(this.props.postId, this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    // Facebook.insights(this.props.postId, '/post_impressions/lifetime', this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
+    Facebook.insights(this.props.postId, '/post_impressions_unique/lifetime', this.props.pageAccessToken, (error, result) => this.responseInfoCallback(error, result));
   }
 
   responseInfoCallback(error, result) {
@@ -71,13 +75,22 @@ export default class Insight extends Component {
     if (this.state.postImpressions === 'N/A') {
       return <Text style={styles.text}>Post impressions are not available now</Text>;
     } else if (this.state.postImpressions !== null) {
-      return (<View>
-        <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
-        <View style={styles.bar}>
-          <View style={[styles.orangeBar, { width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth }]} />
-          <View style={[styles.grayBar, { width: this.state.postImpressions < 3000 ? blockWidth * (1 - (this.state.postImpressions / 3000)) : 0 }]} />
+      return (<TouchableHighlight
+        underlayColor="white"
+        onPress={() => Actions.postInsights({
+          postId: this.props.postId,
+          pageAccessToken: this.props.pageAccessToken,
+        })}
+      >
+        <View>
+          <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
+
+          <View style={styles.bar}>
+            <View style={[styles.orangeBar, { width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth }]} />
+            <View style={[styles.grayBar, { width: this.state.postImpressions < 3000 ? blockWidth * (1 - (this.state.postImpressions / 3000)) : 0 }]} />
+          </View>
         </View>
-      </View>);
+      </TouchableHighlight>);
     }
 
     return null;

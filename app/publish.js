@@ -116,7 +116,7 @@ export default class Publish extends Component {
 
   onRequest() {
     if (this.state.source) {
-      ImageResizer.createResizedImage(this.state.uri, 600, 600, 'JPEG', 60).then((resizedImageUri) => {
+      ImageResizer.createResizedImage(this.state.uri, 500, 500, 'JPEG', 50).then((resizedImageUri) => {
         console.log('resizedImageUri', resizedImageUri);
 
         const file = {

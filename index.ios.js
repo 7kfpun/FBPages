@@ -11,6 +11,7 @@ import Summary from './app/summary';
 import Publish from './app/publish';
 import PublishedPosts from './app/published-posts';
 import UnpublishedPosts from './app/unpublished-posts';
+import PostInsights from './app/post-insights';
 
 console.ignoredYellowBox = [
   'Possible Unhandled Promise Rejection',
@@ -25,6 +26,7 @@ const scenes = Actions.create(
     <Scene key="publish" title={'Publish'} component={Publish} hideNavBar={true} direction="vertical" />
     <Scene key="publishedPosts" title={'Published Posts'} component={PublishedPosts} hideNavBar={true} />
     <Scene key="unpublishedPosts" title={'Unpublished / Scheduled Posts'} component={UnpublishedPosts} hideNavBar={true} />
+    <Scene key="postInsights" title={'Post Insights'} component={PostInsights} hideNavBar={true} />
   </Scene>,
 );
 
