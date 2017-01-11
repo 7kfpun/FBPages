@@ -34,6 +34,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  navigatorBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#E0E0E0',
+  },
   navigatorRightButton: {
     paddingTop: 10,
     paddingLeft: 50,
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
   },
   fullPreview: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.91)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -158,10 +162,7 @@ export default class publishedPosts extends Component {
       <View style={styles.container}>
         <NavigationBar
           title={{ title: this.props.title }}
-          style={{
-            borderBottomWidth: StyleSheet.hairlineWidth * 2,
-            borderBottomColor: '#E0E0E0',
-          }}
+          style={styles.navigatorBar}
           leftButton={{
             title: 'Back',
             handler: Actions.pop,
@@ -221,7 +222,7 @@ export default class publishedPosts extends Component {
                     {item.from && item.from.name}{/* item.to && item.to.data && ` > ${item.to.data[0].name}` */}
                   </Text>
                   {item.application && item.application.name && <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 3 }}>
-                    {`Posted by ${item.application.name}`}
+                    {`Published by ${item.application.name}`}
                   </Text>}
                   <Text style={{ fontSize: 12, fontWeight: '300', color: 'gray', marginBottom: 8 }}>
                     {Moment(item.created_time).fromNow()} {item.privacy && item.privacy.description === 'Public' && <Icon name="public" size={11} color="gray" />}

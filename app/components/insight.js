@@ -16,6 +16,21 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     marginBottom: 6,
   },
+  bar: {
+    flexDirection: 'row',
+  },
+  orangeBar: {
+    height: 6,
+    backgroundColor: '#FFCC80',
+    borderWidth: 1,
+    borderColor: '#FFB74D',
+  },
+  grayBar: {
+    height: 6,
+    backgroundColor: '#F5F5F5',
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
 });
 
 export default class Insight extends Component {
@@ -58,9 +73,9 @@ export default class Insight extends Component {
     } else if (this.state.postImpressions !== null) {
       return (<View>
         <Text style={styles.text}>{this.state.postImpressions} people reached</Text>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth, backgroundColor: '#FFCC80', borderWidth: 1, borderColor: '#FFB74D' }} />
-          <View style={{ height: 6, width: this.state.postImpressions < 3000 ? blockWidth * (1 - (this.state.postImpressions / 3000)) : 0, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EEEEEE' }} />
+        <View style={styles.bar}>
+          <View style={[styles.orangeBar, { width: this.state.postImpressions < 3000 ? blockWidth * (this.state.postImpressions / 3000) : blockWidth }]} />
+          <View style={[styles.grayBar, { width: this.state.postImpressions < 3000 ? blockWidth * (1 - (this.state.postImpressions / 3000)) : 0 }]} />
         </View>
       </View>);
     }

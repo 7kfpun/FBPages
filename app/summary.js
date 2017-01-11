@@ -22,10 +22,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  navigatorBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#E0E0E0',
+  },
   navigatorRightButton: {
     paddingTop: 10,
     paddingLeft: 50,
     paddingRight: 10,
+  },
+  list: {
+    marginBottom: 20,
   },
 });
 
@@ -117,10 +124,7 @@ export default class Summary extends Component {
       <View style={styles.container}>
         <NavigationBar
           title={{ title: this.props.title }}
-          style={{
-            borderBottomWidth: StyleSheet.hairlineWidth * 2,
-            borderBottomColor: '#E0E0E0',
-          }}
+          style={styles.navigatorBar}
           leftButton={{
             title: 'Back',
             handler: Actions.pop,
@@ -147,7 +151,7 @@ export default class Summary extends Component {
         >
           <Cover {...this.props} />
 
-          <List containerStyle={{ marginBottom: 20 }}>
+          <List containerStyle={styles.list}>
             <ListItem
               title={'Published Posts'}
               leftIcon={{ name: 'description' }}

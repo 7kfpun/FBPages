@@ -34,6 +34,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  navigatorBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#E0E0E0',
+  },
+  textBlock: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    margin: 15,
+  },
+  additionalTextBlock: {
+    flexDirection: 'column',
+    marginLeft: 8,
+  },
+  pageNameText: {
+    fontWeight: '400',
+    marginBottom: 3,
+  },
+  publicText: {
+    color: 'gray',
+    marginBottom: 3,
+  },
+  middleBlock: {
+    flex: 5,
+  },
+  pickImageIcon: {
+    margin: 22,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  image: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: window.width,
+    height: window.width * (2 / 3),
+  },
+  removeIcon: {
+    backgroundColor: 'rgba(0,0,0,0)',
+  },
+  bottomBlock: {
+    flex: 6,
+    justifyContent: 'flex-end',
+  },
 });
 
 export default class Publish extends Component {
@@ -184,10 +227,7 @@ export default class Publish extends Component {
       <View style={styles.container}>
         <NavigationBar
           title={{ title: this.props.title }}
-          style={{
-            borderBottomWidth: StyleSheet.hairlineWidth * 2,
-            borderBottomColor: '#E0E0E0',
-          }}
+          style={styles.navigatorBar}
           leftButton={{
             title: 'Cancel',
             handler: () => this.pop(),
@@ -199,13 +239,13 @@ export default class Publish extends Component {
         />
 
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 1, alignItems: 'flex-start', margin: 15, flexDirection: 'row' }}>
+          <View style={styles.textBlock}>
             <ProfilePicture pageId={this.props.pageId} />
-            <View style={{ flexDirection: 'column', marginLeft: 8 }}>
-              <Text style={{ fontWeight: '400', marginBottom: 3 }}>
+            <View style={styles.additionalTextBlock}>
+              <Text style={styles.pageNameText}>
                 {this.props.pageName}
               </Text>
-              <Text style={{ color: 'gray', marginBottom: 3 }}>
+              <Text style={styles.publicText}>
                 <Icon name="public" size={11} color="gray" /> Public
               </Text>
             </View>
@@ -217,8 +257,8 @@ export default class Publish extends Component {
             onChangeText={text => this.setState({ text })}
           />
 
-          <View style={{ flex: 5 }}>
-            <View style={{ margin: 22, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <View style={styles.middleBlock}>
+            <View style={styles.pickImageIcon}>
               <TouchableHighlight underlayColor="white" onPress={() => this.imagePick()}>
                 <Icon name="camera-alt" size={26} color="gray" />
               </TouchableHighlight>
@@ -226,15 +266,15 @@ export default class Publish extends Component {
             {this.state.source && <TouchableHighlight underlayColor="white" onPress={() => this.setState({ source: null })}>
               <Image
                 resizeMode={'contain'}
-                style={{ justifyContent: 'center', alignItems: 'center', width: window.width, height: window.width * (2 / 3) }}
+                style={styles.image}
                 source={this.state.source}
               >
-                <Icon name="highlight-off" size={60} color="white" style={{ backgroundColor: 'rgba(0,0,0,0)' }} />
+                <Icon name="highlight-off" size={60} color="white" style={styles.removeIcon} />
               </Image>
             </TouchableHighlight>}
           </View>
 
-          <View style={{ flex: 6, justifyContent: 'flex-end', backgroundColor: this.state.selectedOption === 'Schedule' ? 'white' : 'rgba(0,0,0,0)' }}>
+          <View style={[styles.bottomBlock, { backgroundColor: this.state.selectedOption === 'Schedule' ? 'white' : 'rgba(0,0,0,0)' }]}>
             <SegmentedControls
               containerStyle={{ margin: 10 }}
               options={['Post now', 'Post later', 'Schedule']}

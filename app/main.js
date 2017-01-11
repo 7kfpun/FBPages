@@ -17,6 +17,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  navigatorBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#E0E0E0',
+  },
+  list: {
+    marginBottom: 20,
+  },
 });
 
 export default class Main extends Component {
@@ -63,10 +70,7 @@ export default class Main extends Component {
       <View style={styles.container}>
         <NavigationBar
           title={{ title: this.props.title }}
-          style={{
-            borderBottomWidth: StyleSheet.hairlineWidth * 2,
-            borderBottomColor: '#E0E0E0',
-          }}
+          style={styles.navigatorBar}
           leftButton={{
             title: 'Logout',
             handler: Actions.login,
@@ -81,7 +85,7 @@ export default class Main extends Component {
             />
           }
         >
-          <List containerStyle={{ marginBottom: 20 }}>
+          <List containerStyle={styles.list}>
             {
               this.state.pages.map((item, i) => (
                 <ListItem

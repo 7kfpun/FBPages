@@ -32,6 +32,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  navigatorBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: '#E0E0E0',
+  },
   navigatorRightButton: {
     paddingTop: 10,
     paddingLeft: 50,
@@ -146,10 +150,7 @@ export default class UnpublishedPosts extends Component {
             title: this.props.title,
             style: { fontSize: 14 },
           }}
-          style={{
-            borderBottomWidth: StyleSheet.hairlineWidth * 2,
-            borderBottomColor: '#E0E0E0',
-          }}
+          style={styles.navigatorBar}
           leftButton={{
             title: 'Back',
             handler: Actions.pop,
