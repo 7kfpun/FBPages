@@ -87,6 +87,20 @@ export const deletePost = (postId, pageAccessToken, callback) => {
   new GraphRequestManager().addRequest(infoRequest).start();
 };
 
+export const publishNowPost = (postId, pageAccessToken, callback) => {
+  const infoRequest = new GraphRequest(
+    `/${postId}`,
+    {
+      parameters: { is_published: { string: 'true' } },
+      httpMethod: 'POST',
+      accessToken: pageAccessToken,
+    },
+    (error, result) => callback(error, result),
+  );
+
+  new GraphRequestManager().addRequest(infoRequest).start();
+};
+
 export const insights = (postId, metric, pageAccessToken, callback) => {
   graphRequest(
     `/${postId}/insights${metric}`,

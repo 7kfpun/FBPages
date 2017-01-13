@@ -73,7 +73,7 @@ export default class Summary extends Component {
     if (error) {
       console.log('Error fetching feed:', error);
     } else {
-      console.log('Success fetching feed:', result);
+      // console.log('Success fetching feed:', result);
       if (result.data && result.data.length === 100) {
         this.setState({
           publishedPostsLength: '100+',
@@ -98,7 +98,7 @@ export default class Summary extends Component {
     if (error) {
       console.log('Error fetching feed:', error);
     } else {
-      console.log('Success fetching feed:', result);
+      // console.log('Success fetching feed:', result);
       if (result.data && result.data.length === 100) {
         this.setState({
           unpublishedPostsLength: '100+',
